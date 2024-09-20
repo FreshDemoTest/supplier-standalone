@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Env var validation
+if [ -z "$ENV" ]
+then
+    echo "[WARN] Development environment hasn't been set!"
+    exit 1
+fi
+
+if [ -z "$CDN_DISTRIBUTION" ]
+then
+    echo "[WARN] Cloudfront CDN Distribution hasn't been set!"
+    exit 1
+fi
+
+# delete mappings
+
+echo "[INFO] Release CDN ($ENV) environment!"
+aws cloudfront create-invalidation --distribution-id $CDN_DISTRIBUTION --paths "/*"
+
+if [ $? -eq 0 ]
+then
+    echo "Cloudfront CDN has been cleared!"
+    exit 0
+else
+    echo "Could not clear CloudFront CDN!" >&2
+    exit 1
+fi

@@ -1,0 +1,28 @@
+#!/bin/bash
+# Execution usage:
+# bash sync-s3 <source_dir>
+
+if [ -z "$1" ]
+then
+    echo "[WARN] Missing 1 arguments: Source Directory!"
+    exit 1
+fi
+
+if [ -z "$STATIC_S3_BUCKET" ]
+then
+    echo "[WARN] S3 Bucket hasn't been set!"
+    exit 1
+fi
+
+echo "Deploying to AWS Bucket S3 ($STATIC_S3_BUCKET)"
+rm ./build/static/js/*.map  # remove the mappings
+aws s3 sync --exclude ".git/*" --exclude ".gitignore" --exclude ".DS*" --exclude "*.sh" --exclude "*.md" $1 s3://$STATIC_S3_BUCKET
+
+if [ $? -eq 0 ]
+then
+    echo "Version has been deployed!"
+    exit 0
+else
+    echo "Could not sync S3!" >&2
+    exit 1
+fi

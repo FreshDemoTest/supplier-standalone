@@ -1,0 +1,251 @@
+name: Deploy to AWS S3 Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - 'staging'
+    # Only run when PR is merged
+    # Also ensure the base branch is either main or staging
+    # Note: This event only triggers when PR is closed/merged
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+env:
+  branch: ''
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_ENV
+          echo "Current branch: $(echo ${GITHUB_REF#refs/heads/})"
+    outputs:
+      branch: ${{ env.branch }}
+
+  build-staging:
+    needs: release
+    if: ${{ needs.release.outputs.branch == 'staging' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    env:
+      ENV: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/hydrogen'
+      - name: Install Dependencies
+        run: npm install
+      - name: Release branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+      - name: '[STG] Run Production Build'
+        env:
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.STG_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ vars.STG_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ vars.STG_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ vars.STG_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.STG_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APPID: ${{ vars.STG_FIREBASE_APPID }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ vars.STG_FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_GA_MEASUREMENT_ID: ${{ vars.STG_GA_MEASUREMENT_ID }}
+          REACT_APP_MIXPANEL_ID: ${{ vars.STG_MIXPANEL_ID }}
+          REACT_APP_PROTOCOL: 'https'
+          REACT_APP_PUBLIC_HOST: 'stg-supply.alima.la'
+          REACT_APP_ALIMA_API_HOST: 'https://gqlapi.stg.alima.la/'
+          REACT_APP_ALIMA_EMBED_SECRET: ${{ secrets.STG_ALIMA_EMBED_SECRET }}
+          REACT_APP_STRIPE_PUBLIC_KEY: ${{ secrets.STG_STRIPE_PUBLIC_SECRET }}
+        run: |
+          echo "Deploying $ENV"
+          # Vars show
+          echo REACT_APP_FIREBASE_API_KEY=$REACT_APP_FIREBASE_API_KEY
+          echo REACT_APP_FIREBASE_AUTH_DOMAIN=$REACT_APP_FIREBASE_AUTH_DOMAIN
+          echo REACT_APP_FIREBASE_PROJECT_ID=$REACT_APP_FIREBASE_PROJECT_ID
+          echo REACT_APP_FIREBASE_STORAGE_BUCKET=$REACT_APP_FIREBASE_STORAGE_BUCKET
+          echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$REACT_APP_FIREBASE_MESSAGING_SENDER_ID
+          echo REACT_APP_FIREBASE_APPID=$REACT_APP_FIREBASE_APPID
+          echo REACT_APP_FIREBASE_MEASUREMENT_ID=$REACT_APP_FIREBASE_MEASUREMENT_ID
+          echo REACT_APP_GA_MEASUREMENT_ID=$REACT_APP_GA_MEASUREMENT_ID
+          echo REACT_APP_MIXPANEL_ID=$REACT_APP_MIXPANEL_ID
+          echo REACT_APP_ALIMA_EMBED_SECRET=$REACT_APP_ALIMA_EMBED_SECRET
+          echo REACT_APP_STRIPE_PUBLIC_KEY=$REACT_APP_STRIPE_PUBLIC_KEY
+          # build 
+          npm run build
+      - name: Upload a Build Artifact - build
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          # Artifact name
+          name: npm-build
+          # A file, directory or wildcard pattern that describes what to upload
+          path: ./build/
+
+  deploy-staging:
+    needs: [release, build-staging]
+    if: ${{ needs.release.outputs.branch == 'staging' }}
+    runs-on: ubuntu-latest
+    env:
+      ENV: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install AWS CLI
+        run: |
+          python3 -m pip install \
+            colorama==0.4.4\
+            PyYAML==5.3.1\
+            awscli
+      - name: Download a Build Artifact - build
+        uses: actions/download-artifact@v2.1.1
+        with:
+          # Artifact name
+          name: npm-build
+          path: ./build/
+      - name: Test Download Artifact - build
+        run: |
+          echo "Current dir: $PWD"
+          echo "Recursive Content of directory:"
+          ls -R
+      - name: Sync with S3
+        id: S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          STATIC_S3_BUCKET: ${{ vars.STG_STATIC_S3_BUCKET }}
+        run: |
+          ./bin/sync-s3 ./build/
+      - name: Invalidate AWS CloudFront
+        id: CDN
+        env:
+          CDN_DISTRIBUTION: ${{ vars.STG_CDN_DISTRIBUTION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ./bin/deploy
+
+  build-prod:
+    needs: release
+    if: ${{ needs.release.outputs.branch == 'main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    env:
+      ENV: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/hydrogen'
+      - name: Install Dependencies
+        run: npm install
+      - name: Release branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+      - name: '[PROD] Run Production Build'
+        env:
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.PROD_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ vars.PROD_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ vars.PROD_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ vars.PROD_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.PROD_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APPID: ${{ vars.PROD_FIREBASE_APPID }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ vars.PROD_FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_GA_MEASUREMENT_ID: ${{ vars.PROD_GA_MEASUREMENT_ID }}
+          REACT_APP_MIXPANEL_ID: ${{ vars.PROD_MIXPANEL_ID }}
+          REACT_APP_PROTOCOL: 'https'
+          REACT_APP_PUBLIC_HOST: 'seller.alima.la'
+          REACT_APP_ALIMA_API_HOST: 'https://gqlapi.prd.alima.la/'
+          REACT_APP_ALIMA_EMBED_SECRET: ${{ secrets.PROD_ALIMA_EMBED_SECRET }}
+          REACT_APP_STRIPE_PUBLIC_KEY: ${{ secrets.PROD_STRIPE_PUBLIC_SECRET }}
+        run: |
+          echo "Deploying $ENV"
+          # Vars show
+          echo REACT_APP_FIREBASE_API_KEY=$REACT_APP_FIREBASE_API_KEY
+          echo REACT_APP_FIREBASE_AUTH_DOMAIN=$REACT_APP_FIREBASE_AUTH_DOMAIN
+          echo REACT_APP_FIREBASE_PROJECT_ID=$REACT_APP_FIREBASE_PROJECT_ID
+          echo REACT_APP_FIREBASE_STORAGE_BUCKET=$REACT_APP_FIREBASE_STORAGE_BUCKET
+          echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$REACT_APP_FIREBASE_MESSAGING_SENDER_ID
+          echo REACT_APP_FIREBASE_APPID=$REACT_APP_FIREBASE_APPID
+          echo REACT_APP_FIREBASE_MEASUREMENT_ID=$REACT_APP_FIREBASE_MEASUREMENT_ID
+          echo REACT_APP_GA_MEASUREMENT_ID=$REACT_APP_GA_MEASUREMENT_ID
+          echo REACT_APP_MIXPANEL_ID=$REACT_APP_MIXPANEL_ID
+          echo REACT_APP_ALIMA_EMBED_SECRET=$REACT_APP_ALIMA_EMBED_SECRET
+          echo REACT_APP_STRIPE_PUBLIC_KEY=$REACT_APP_STRIPE_PUBLIC_KEY
+          # build 
+          npm run build
+      - name: Upload a Build Artifact - build
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          # Artifact name
+          name: npm-build
+          # A file, directory or wildcard pattern that describes what to upload
+          path: ./build/
+
+  deploy-prod:
+    needs: [release, build-prod]
+    if: ${{ needs.release.outputs.branch == 'main' }}
+    runs-on: ubuntu-latest
+    env:
+      ENV: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install AWS CLI
+        run: |
+          python3 -m pip install \
+            colorama==0.4.4\
+            PyYAML==5.3.1\
+            awscli
+      - name: Download a Build Artifact - build
+        uses: actions/download-artifact@v2.1.1
+        with:
+          # Artifact name
+          name: npm-build
+          path: ./build/
+      - name: Test Download Artifact - build
+        run: |
+          echo "Current dir: $PWD"
+          echo "Recursive Content of directory:"
+          ls -R
+      - name: Sync with S3
+        id: S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          STATIC_S3_BUCKET: ${{ vars.PROD_STATIC_S3_BUCKET }}
+        run: |
+          ./bin/sync-s3 ./build/
+      - name: Invalidate AWS CloudFront
+        id: CDN
+        env:
+          CDN_DISTRIBUTION: ${{ vars.PROD_CDN_DISTRIBUTION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ./bin/deploy
