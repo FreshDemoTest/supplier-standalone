@@ -1,4 +1,4 @@
-export const IMAGE_CDN = "https://res.cloudinary.com/neutro-mx/";
+export const IMAGE_CDN = "https://res.cloudinary.com/dynivnmji/";
 
 export function buildImageUrl(publicId: string, width: number): string {
   return `${IMAGE_CDN}q_auto,w_${width}/${publicId}`;

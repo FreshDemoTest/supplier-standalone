@@ -16,7 +16,6 @@ import {
   getBusinessAccount,
 } from "../../../redux/slices/account";
 import EcommerceImageUploadModal from "./EcommerceImageUploadModal";
-import { alimaAppDeployment } from "../../../config";
 
 // ----------------------------------------------------------------------
 
@@ -36,8 +35,7 @@ export const EcommerceImageSelector: React.FC<
   const [addImageOpen, setAddImageOpen] = useState(false);
   const [editImageOpen, setEditImageOpen] = useState(false);
   const [deleteImageOpen, setDeleteImageOpen] = useState(false);
-  const cloudinaryEnv: string = alimaAppDeployment.publicUrl === 'https://seller.alima.la' || alimaAppDeployment.publicUrl === 'http://seller.alima.la' ? "PROD" : "STG";
-  const urlImage = `alima-marketplace-${cloudinaryEnv}/supplier/profile/${supplierBusinessId}_${imageType}.png`
+  const urlImage = `alima-marketplace-PROD/supplier/profile/${supplierBusinessId}_${imageType}.png`
 
   // onMount
   useEffect(() => {
