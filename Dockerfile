@@ -13,14 +13,11 @@ RUN npm install
 # 5. Copy the rest of the application code
 COPY . .
 
-# 6. Build the app for production
-RUN npm run build
+# 6. Set the desired port as an environment variable
+ENV PORT=4000
 
-# 7. Install a simple server to serve the production build (e.g., serve)
-RUN npm install -g serve
+# 7. Expose the port your app will run on
+EXPOSE 4000
 
-# 8. Expose the port your app will run on (default for serve is 5000)
-EXPOSE 5000
-
-# 9. Use serve to serve the build directory
-CMD ["serve", "-s", "build", "-l", "5000"]
+# 8. Start the app with the specified port
+CMD ["npm", "start"]
