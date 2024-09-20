@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # 4. Install dependencies (npm ci is used for CI/CD, npm install is used for development)
-RUN npm ci --only=production
+RUN npm install
 
 # 5. Copy the rest of the application code
 COPY . .
