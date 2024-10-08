@@ -7,6 +7,7 @@ import { alimaAppDeployment, firebaseConfig } from '../config';
 
 if (!firebase.apps.length) {
   try {
+    console.log(firebaseConfig)
     firebase.initializeApp(firebaseConfig);
   }
   catch (e) {
