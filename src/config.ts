@@ -42,8 +42,11 @@ interface appDeployment {
 /**
  * Configuration implementations
  */
+console.log(process.env.REACT_APP_FIREBASE_API_KEY)
+console.log(process.env)
+console.log(process)
 export const firebaseConfig: firebaseConfigInterface = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "test",
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
