@@ -42,18 +42,16 @@ interface appDeployment {
 /**
  * Configuration implementations
  */
-console.log(process.env.REACT_APP_FIREBASE_API_KEY)
-console.log(process.env)
-console.log(process)
+
 export const firebaseConfig: firebaseConfigInterface = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "test",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APPID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyDRoeSluddIJtgHIROwnYHHmSUzsDMY8uQ",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "freshdemotest-9428d.firebaseapp.com",
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL || "",
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "freshdemotest-9428d",
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "freshdemotest-9428d.appspot.com",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "505167118933",
+  appId: process.env.REACT_APP_FIREBASE_APPID || "1:505167118933:web:a6c399636ec7777e7c8adc",
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-PDMWPJMPHE",
 };
 
 export const alimaApiConfig: apiConfigInterface = {
