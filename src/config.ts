@@ -55,7 +55,7 @@ export const firebaseConfig: firebaseConfigInterface = {
 };
 
 export const alimaApiConfig: apiConfigInterface = {
-  host: process.env.REACT_APP_ALIMA_API_HOST,
+  host: process.env.REACT_APP_ALIMA_API_HOST || "https://gql-standalone.onrender.com/",
   embedSecret: process.env.REACT_APP_ALIMA_EMBED_SECRET,
 };
 
