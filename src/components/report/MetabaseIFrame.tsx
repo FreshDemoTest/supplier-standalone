@@ -6,7 +6,7 @@ import LoadingProgress from "../LoadingProgress";
 
 // ----------------------------------------------------
 
-const METABASE_SITE_URL = "https://lytics.prd.alima.la";
+const METABASE_SITE_URL = "https://fresh-demo.metabaseapp.com";
 
 // ----------------------------------------------------
 
