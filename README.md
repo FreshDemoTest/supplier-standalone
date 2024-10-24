@@ -2,13 +2,6 @@
 
 Repository implementing Alima's Supplier React Typescript Progressive Web App, as an extension of the create-react-app template. The app is meant to be an order management system (OMS), catalog management system (CMS), procurement & inventory tracker (ERP) for suppliers optimized for cross-platform usage.  
 
-## Releases
-
-| Environment | Status |
-| ----------- | ------ |
-| Staging | ![GH Action Staging](https://github.com/Alima-Latam/alima-supplier-pwa/actions/workflows/on-pr-merge.yaml/badge.svg?branch=staging) |
-| Production | ![GH Action Production](https://github.com/Alima-Latam/alima-supplier-pwa/actions/workflows/on-pr-merge.yaml/badge.svg?branch=production)
-
 
 ## Progressive Web App (PWA)
 
