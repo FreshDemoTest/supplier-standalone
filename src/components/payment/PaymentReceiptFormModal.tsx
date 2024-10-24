@@ -23,7 +23,7 @@ import { useAppDispatch } from "../../redux/store";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import DragDropFiles from "../DragDropFiles";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { useSnackbar } from "notistack";
 import { updatePayReceipt, uploadPayReceipt } from "../../redux/slices/orden";
 import useAuth from "../../hooks/useAuth";
@@ -93,7 +93,7 @@ const PaymentReceiptFormModal: React.FC<PaymentReceiptFormProps> = ({
 
   const validateMultiple = (value: any) => {
     const _rec = { ...receipt };
-    value = parseFloat(value).toFixed(2)
+    value = parseFloat(value).toFixed(2);
     _rec["paymentValue" as keyof PaymentReceiptType] = value;
     setReceipt(_rec);
   };
@@ -145,7 +145,7 @@ const PaymentReceiptFormModal: React.FC<PaymentReceiptFormProps> = ({
   const handleUploadPayment = async () => {
     if (!validateInputs()) return;
     setLoading(true);
-    mixtrack("orden_details_upload_payment_receipt", {
+    track("view_item", {
       visit: window.location.toString(),
       page: "OrdenDetails",
       section: "PaymentDetails",
@@ -272,7 +272,9 @@ const PaymentReceiptFormModal: React.FC<PaymentReceiptFormProps> = ({
                             e.target.value
                           )
                         }
-                        onBlur={(e) => validateMultiple(parseFloat(e.target.value))}
+                        onBlur={(e) =>
+                          validateMultiple(parseFloat(e.target.value))
+                        }
                         inputProps={{
                           inputMode: "decimal",
                           style: {

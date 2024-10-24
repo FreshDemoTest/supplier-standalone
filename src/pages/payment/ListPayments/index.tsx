@@ -10,7 +10,7 @@ import { PATH_APP } from "../../../routes/paths";
 import Page from "../../../components/Page";
 import ListPaymentsView from "./ListPayments";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 import { useSearchParams } from "react-router-dom";
 
@@ -106,7 +106,7 @@ const ListInvoices: React.FC<ListInvoicesViewProps> = () => {
   useEffect(() => {
     if (permissionsLoaded && !allowPagosList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("payments_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "ListPayments",
         section: "",

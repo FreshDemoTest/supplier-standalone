@@ -15,7 +15,7 @@ import useAuth from "../../../hooks/useAuth";
 import { useSnackbar } from "notistack";
 // domain
 import { useAppDispatch } from "../../../redux/store";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { DragDropImages } from "../../DragDropFiles";
 import {
   addSupplierProductImage,
@@ -48,7 +48,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
   const handleUploadImage = async () => {
     setLoading(true);
-    mixtrack("product_image_upload", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "ProductDetails",
       section: "ProductImageSelector",

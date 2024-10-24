@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { PATH_APP } from "../../routes/paths";
 // components
 // styles
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import FixedAddButton from "../footers/FixedAddButton";
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@ const AddClientPopover: React.FC = () => {
 
   const handleOpen = () => {
     navigate(PATH_APP.client.add.form);
-    mixtrack("client_add_click", {
+    track("select_content", {
       visit: window.location.toString(),
       section: "AddClientPopover",
       page: "ListClients",

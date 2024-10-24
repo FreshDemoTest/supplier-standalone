@@ -24,7 +24,7 @@ import LoadingProgress from "../../../components/LoadingProgress";
 // domain
 import { SupplierProductType } from "../../../domain/supplier/SupplierProduct";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { createBlobURI, normalizeText } from "../../../utils/helpers";
 import { PATH_APP } from "../../../routes/paths";
 import { DynamicLoader } from "../../../components/DynamicLoader";
@@ -120,7 +120,7 @@ const ListSupplierProductsView: React.FC<{}> = () => {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_pedidos_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -131,7 +131,7 @@ const ListSupplierProductsView: React.FC<{}> = () => {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_pedidos_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -144,7 +144,7 @@ const ListSupplierProductsView: React.FC<{}> = () => {
   // search
   const handleSearch = (value: string) => {
     setSearch(value);
-    mixtrack("search_supplier_prods", {
+    track("view_search_results", {
       visit: window.location.toString(),
       page: "ListSupplierProducts",
       section: "SearchBar",

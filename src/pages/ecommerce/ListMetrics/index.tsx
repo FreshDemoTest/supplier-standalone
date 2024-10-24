@@ -9,7 +9,7 @@ import { STab, StyledTabs } from "../../../styles/navtabs/NavTabs";
 import Page from "../../../components/Page";
 // utils
 import { isAllowedTo } from "../../../utils/permissions";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 // routes
 import { PATH_APP } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -88,7 +88,7 @@ const ListEcommercePage: React.FC<ListEcommercePageProps> = ({
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     // changeTab(newValue);
     navigate(`#${newValue}`);
-    mixtrack("supplier_products_tab_change", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "ListSupplierProducts",
       section: "SuppliersNavTabs",
@@ -138,9 +138,7 @@ type ListEcommerceViewProps = {
   viewMode: "metrics" | "custom";
 };
 
-const ListEcommerce: React.FC<ListEcommerceViewProps> = ({
-  viewMode,
-}) => {
+const ListEcommerce: React.FC<ListEcommerceViewProps> = ({ viewMode }) => {
   const navigate = useNavigate();
   const { hash } = useLocation();
   const [activeTab, setActiveTab] = useState<"metrics" | "custom">(viewMode);
@@ -158,7 +156,7 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({
   useEffect(() => {
     if (permissionsLoaded && !allowSupProdsList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("ecommerce_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "ListEcommerce",
         section: "",
@@ -180,9 +178,7 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({
     }
   }, [hash]);
 
-  return (
-    <ListEcommercePage title="Ecommerce | Alima" viewMode={activeTab} />
-  );
+  return <ListEcommercePage title="Ecommerce | Alima" viewMode={activeTab} />;
 };
 
 export default ListEcommerce;

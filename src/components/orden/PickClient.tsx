@@ -37,7 +37,7 @@ import {
 // domain
 import { ClientProfileType } from "../../domain/client/Client";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { normalizeText } from "../../utils/helpers";
 
 // ----------------------------------------------------------------------
@@ -176,7 +176,7 @@ const PickClientSection: React.FC<PickClientSectionProps> = ({
                 component={RouterLink}
                 to={PATH_APP.client.add.form}
                 onClick={() => {
-                  mixtrack("add_clien_click", {
+                  track('view_item', {
                     visit: window.location.toString(),
                     page: "AddOrden",
                     section: "PickClient",
@@ -243,7 +243,7 @@ const PickClientSection: React.FC<PickClientSectionProps> = ({
                   component={RouterLink}
                   to={PATH_APP.client.add.form}
                   onClick={() => {
-                    mixtrack("add_clien_click", {
+                    track('add_to_cart', {
                       visit: window.location.toString(),
                       page: "AddOrden",
                       section: "PickClient",

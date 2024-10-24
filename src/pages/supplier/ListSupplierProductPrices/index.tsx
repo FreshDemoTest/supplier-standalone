@@ -1,7 +1,7 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 // material
 import { Box, Grid, styled, useTheme } from "@mui/material";
-import LockIcon from '@mui/icons-material/Lock';
+import LockIcon from "@mui/icons-material/Lock";
 //  hooks
 import { useLocation, useNavigate } from "react-router";
 // styles
@@ -11,8 +11,11 @@ import Page from "../../../components/Page";
 import ListSupplierProductsView from "./ListSupplierProducts";
 import ListSupplierPricesListsView from "./ListSupplierPricesLists";
 // utils
-import { isAllowedTo, retrieveUISectionDetails } from "../../../utils/permissions";
-import { mixtrack } from "../../../utils/analytics";
+import {
+  isAllowedTo,
+  retrieveUISectionDetails,
+} from "../../../utils/permissions";
+import track from "../../../utils/analytics";
 // routes
 import { PATH_APP } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -45,8 +48,8 @@ const ListSupplierProductsPage: React.FC<ListSupplierProductsPageProps> = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(viewMode);
   const [pageTitle, setPageTitle] = useState(title);
-  const {sessionToken } = useAuth();
-  const {saasConfig } = useAppSelector((state) => state.account);
+  const { sessionToken } = useAuth();
+  const { saasConfig } = useAppSelector((state) => state.account);
   const [pluginConfig, setPluginConfig] = useState<SaasPluginType | undefined>(
     undefined
   );
@@ -83,7 +86,13 @@ const ListSupplierProductsPage: React.FC<ListSupplierProductsPageProps> = ({
 
   // handlers
   const changeTab = (newValue: string) => {
-    setActiveTab(newValue === "products" ? "products" : newValue ==="prices" ? "prices": "stock");
+    setActiveTab(
+      newValue === "products"
+        ? "products"
+        : newValue === "prices"
+        ? "prices"
+        : "stock"
+    );
     setPageTitle(
       newValue === "products" ? "Mis Productos | Alima" : "Mis Precios | Alima"
     );
@@ -92,7 +101,7 @@ const ListSupplierProductsPage: React.FC<ListSupplierProductsPageProps> = ({
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     // changeTab(newValue);
     navigate(`#${newValue}`);
-    mixtrack("supplier_products_tab_change", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "ListSupplierProducts",
       section: "SuppliersNavTabs",
@@ -129,16 +138,16 @@ const ListSupplierProductsPage: React.FC<ListSupplierProductsPageProps> = ({
               {!pluginConfig && !errorPlg && (
                 <LoadingProgress sx={{ mt: theme.spacing(5) }} />
               )}
-              {pluginConfig && (
-                <STab value="stock" label="Inventario" />
-              )}
+              {pluginConfig && <STab value="stock" label="Inventario" />}
               {errorPlg && (
-                <STab 
-                  value="stock" 
-                  label={<Box display="flex" alignItems="center">
-                            Inventario <LockIcon sx={{ ml: 1 }} />
-                        </Box>} 
-                  disabled 
+                <STab
+                  value="stock"
+                  label={
+                    <Box display="flex" alignItems="center">
+                      Inventario <LockIcon sx={{ ml: 1 }} />
+                    </Box>
+                  }
+                  disabled
                 />
               )}
             </StyledTabs>
@@ -163,7 +172,9 @@ const ListSupplierProducts: React.FC<ListSuppliersViewProps> = ({
 }) => {
   const navigate = useNavigate();
   const { hash } = useLocation();
-  const [activeTab, setActiveTab] = useState<"products" | "prices" | "stock">(viewMode);
+  const [activeTab, setActiveTab] = useState<"products" | "prices" | "stock">(
+    viewMode
+  );
   const { loaded: permissionsLoaded, allowed } = useAppSelector(
     (state) => state.permission
   );
@@ -178,7 +189,7 @@ const ListSupplierProducts: React.FC<ListSuppliersViewProps> = ({
   useEffect(() => {
     if (permissionsLoaded && !allowSupProdsList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("supplier_prods_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "ListSupplierProducts",
         section: "",

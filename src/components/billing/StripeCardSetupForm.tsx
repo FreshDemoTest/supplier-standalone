@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import StripeCard from "./StripeCard";
 import { Alert, Box, Button, LinearProgress, Typography } from "@mui/material";
 
@@ -135,7 +135,7 @@ const StripeCardSetupForm: React.FC<StripeCardSetupFormProps> = ({
 
         // call parent function & track event
         onCardAdded();
-        mixtrack("AddsCardInStripe", {
+        track("add_payment_info", {
           visit: window.location.toString(),
           email: clientEmail,
         });

@@ -22,7 +22,7 @@ import LoadingProgress from "../../../components/LoadingProgress";
 // domain
 import { SupplierProductType } from "../../../domain/supplier/SupplierProduct";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { createBlobURI, normalizeText } from "../../../utils/helpers";
 import { DynamicLoader } from "../../../components/DynamicLoader";
 import MHidden from "../../../components/extensions/MHidden";
@@ -51,7 +51,9 @@ const searchAndFilter = (
       return byName || byCateg || bySku;
     });
   }
-  const activeSupplierProducts = filteredSuppliers.filter(product => product.stock?.active);
+  const activeSupplierProducts = filteredSuppliers.filter(
+    (product) => product.stock?.active
+  );
   return activeSupplierProducts;
 };
 
@@ -123,12 +125,14 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
   // call to download file
   const handleDownloadExport = async (xformat: string) => {
     try {
-      await dispatch(exportProductsStockFile(xformat, activeUnit.id, sessionToken || "", ""));
+      await dispatch(
+        exportProductsStockFile(xformat, activeUnit.id, sessionToken || "", "")
+      );
       enqueueSnackbar(`Descargando archivo ${xformat.toUpperCase()}...`, {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_pedidos_${xformat}`, {
+      track("view_item", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -139,7 +143,7 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_pedidos_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -168,7 +172,7 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
   // search
   const handleSearch = (value: string) => {
     setSearch(value);
-    mixtrack("search_supplier_prods", {
+    track("view_search_results", {
       visit: window.location.toString(),
       page: "ListSupplierProducts",
       section: "SearchBar",
@@ -185,7 +189,6 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
     <>
       {!errorPlg && (
         <Box sx={{ mt: theme.spacing(3) }}>
-
           <Grid container>
             <Grid item xs={10} md={7}>
               {/* Search bar */}
@@ -199,7 +202,9 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
             <Grid item xs={0} md={4}>
               {/* Desktop only */}
               <MHidden width="mdDown">
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
+                <Box
+                  sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}
+                >
                   <AddSupplierProdsPopover sectionType="stock" />
                 </Box>
               </MHidden>
@@ -252,10 +257,7 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
               renderMap={(filtSProds) => {
                 return filtSProds.map((sup) => (
                   <Box key={sup.id} sx={{ mb: theme.spacing(2) }}>
-                    <SupplierProductStockCardItem
-                      supplierProduct={sup}
-
-                    />
+                    <SupplierProductStockCardItem supplierProduct={sup} />
                   </Box>
                 ));
               }}
@@ -284,7 +286,6 @@ const ListSupplierProductsStockView: React.FC<{}> = () => {
           <MHidden width="mdUp">
             <FixedAddSupplierProdsPopover sectionType="stock" />
           </MHidden>
-
         </Box>
       )}
     </>

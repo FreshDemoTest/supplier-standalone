@@ -36,7 +36,7 @@ import AddClientPopover from "../../../components/client/AddClientPopover";
 import BasicDialog from "../../../components/navigation/BasicDialog";
 import { ListUnitOptions } from "../../../layouts/dashboard/UnitSelectPopover";
 // domain
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { ClientProfileType } from "../../../domain/client/Client";
 import { enqueueSnackbar } from "notistack";
 import LoadingProgress from "../../../components/LoadingProgress";
@@ -165,7 +165,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_pedidos_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -176,7 +176,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_pedidos_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Pedidos",
         section: "SearchBar",
@@ -242,7 +242,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
   // search
   const handleSearch = (value: string) => {
     dispatch(setActiveSearch(value));
-    mixtrack("search_active_clients", {
+    track("search", {
       visit: window.location.toString(),
       page: "ListClients",
       section: "SearchBar",
@@ -258,7 +258,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
         search: search,
       })
     );
-    mixtrack("filter_active_clients", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "ListClients",
       section: "SearchBar",
@@ -367,7 +367,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
                 }
                 onClick={() => {
                   navigate(PATH_APP.client.add.form);
-                  mixtrack("client_add_click", {
+                  track("select_content", {
                     visit: window.location.toString(),
                     section: "SearchBar",
                     page: "ListActiveClients",
@@ -393,7 +393,7 @@ const ListActiveClientsView: React.FC<{}> = () => {
               justifyContent: "flex-start",
               [theme.breakpoints.down("md")]: {
                 justifyContent: "center",
-              }
+              },
             }}
           >
             {/* Search bar */}

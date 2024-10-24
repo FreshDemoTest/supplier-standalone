@@ -26,7 +26,7 @@ import BasicDialog from "../components/navigation/BasicDialog";
 import LoadingProgress from "../components/LoadingProgress";
 // utils
 import { delay } from "../utils/helpers";
-import { mixtrack } from "../utils/analytics";
+import track from "../utils/analytics";
 import FixedAddButton from "../components/footers/FixedAddButton";
 import SUnitForm from "../components/account/SUnitForm";
 import AlimaSupplyPlan, {
@@ -389,12 +389,12 @@ export default function Onboarding() {
   const handleOnContinue = async () => {
     await delay(500);
     setOnboardingStep(ONBOARDING_STEPS.REDIRECTED);
-    mixtrack("onboarding_success", {
+    track("sign_up", {
       visit: window.location.toString(),
       page: "Onboarding",
       section: "Modal",
     });
-    dispatch(getBusinessAccount(sessionToken||""));
+    dispatch(getBusinessAccount(sessionToken || ""));
     navigate(PATH_APP.root);
   };
 
@@ -466,7 +466,7 @@ export default function Onboarding() {
               {/* Help button */}
               <FixedAddButton
                 onClick={() => {
-                  mixtrack("onboarding_help", {
+                  track("select_content", {
                     visit: window.location.toString(),
                     page: "Onboarding",
                     section: "HelpBottomButton",

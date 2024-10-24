@@ -7,7 +7,7 @@ import useAuth from "../../../hooks/useAuth";
 // components
 import Page from "../../../components/Page";
 // utils & routes
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { PATH_APP } from "../../../routes/paths";
 // redux
 import { getBusinessAccount } from "../../../redux/slices/account";
@@ -75,7 +75,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ title, pluginName }) => {
       enqueueSnackbar("No tienes acceso a los Reportes", {
         variant: "warning",
       });
-      mixtrack("reports_to_ordenes_redirect", {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",
         section: "",

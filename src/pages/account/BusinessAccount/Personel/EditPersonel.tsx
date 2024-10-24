@@ -1,39 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 // material
-import { styled } from '@mui/material/styles';
-import { Box, Container, Typography } from '@mui/material';
+import { styled } from "@mui/material/styles";
+import { Box, Container, Typography } from "@mui/material";
 // hooks
-import { useNavigate, useParams } from 'react-router';
-import useAuth from '../../../../hooks/useAuth';
+import { useNavigate, useParams } from "react-router";
+import useAuth from "../../../../hooks/useAuth";
 // components
-import Page from '../../../../components/Page';
-import BasicDialog from '../../../../components/navigation/BasicDialog';
-import PersonelForm from '../../../../components/account/PersonelForm';
+import Page from "../../../../components/Page";
+import BasicDialog from "../../../../components/navigation/BasicDialog";
+import PersonelForm from "../../../../components/account/PersonelForm";
 // routes
-import { PATH_APP } from '../../../../routes/paths';
+import { PATH_APP } from "../../../../routes/paths";
 // redux
-import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { getTeamMembers, getTeammate } from '../../../../redux/slices/account';
+import { useAppDispatch, useAppSelector } from "../../../../redux/store";
+import { getTeamMembers, getTeammate } from "../../../../redux/slices/account";
 // utils
-import { mixtrack } from '../../../../utils/analytics';
-import { delay } from '../../../../utils/helpers';
+import track from "../../../../utils/analytics";
+import { delay } from "../../../../utils/helpers";
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+  },
 }));
 
-const ContentStyle = styled('div')(({ theme }) => ({
+const ContentStyle = styled("div")(({ theme }) => ({
   maxWidth: 480,
-  margin: 'auto',
-  display: 'flex',
-  minHeight: '100%',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: theme.spacing(0, 0)
+  margin: "auto",
+  display: "flex",
+  minHeight: "100%",
+  flexDirection: "column",
+  justifyContent: "center",
+  padding: theme.spacing(0, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -70,14 +70,14 @@ const EditPersonel = () => {
         const _unit = units.find((b: any) => b.id === unt.unit.id);
         // show admin if at least one unit has admin
         const _admin_perm = unt.permissions.find(
-          (p: any) => p.key === 'usersadmin-all'
+          (p: any) => p.key === "usersadmin-all"
         );
         _admin = _admin_perm?.value || false;
         return {
           unit: _unit,
           permissions: unt.permissions.filter(
-            (p: any) => p.key !== 'usersadmin-all'
-          )
+            (p: any) => p.key !== "usersadmin-all"
+          ),
         };
       });
     }
@@ -98,14 +98,14 @@ const EditPersonel = () => {
   const handleOnContinue = async () => {
     await delay(500);
     setOpenConfirmDiag(false);
-    mixtrack('edit_personel', {
+    track("select_content", {
       businessId: business.id,
       visit: window.location.toString(),
-      page: 'EditPersonel',
-      section: 'Modal'
+      page: "EditPersonel",
+      section: "Modal",
     });
     // fetch all team members from backend
-    dispatch(getTeamMembers(business.id, sessionToken || ''));
+    dispatch(getTeamMembers(business.id, sessionToken || ""));
     navigate(PATH_APP.account.team.list);
   };
 
@@ -118,8 +118,8 @@ const EditPersonel = () => {
         msg="El miembro de tu Personal ha sido actualizado con éxito."
         continueAction={{
           active: true,
-          msg: 'Continuar',
-          actionFn: handleOnContinue
+          msg: "Continuar",
+          actionFn: handleOnContinue,
         }}
         closeMark={false}
         onClose={() => setOpenConfirmDiag(false)}
@@ -131,8 +131,8 @@ const EditPersonel = () => {
         msg="No se ha podido actualizar el miembro de tu Personal."
         backAction={{
           active: true,
-          msg: 'Ok',
-          actionFn: () => setOpenErrorDiag(false)
+          msg: "Ok",
+          actionFn: () => setOpenErrorDiag(false),
         }}
         closeMark={false}
         onClose={() => setOpenErrorDiag(false)}
@@ -140,13 +140,13 @@ const EditPersonel = () => {
 
       <Container>
         <ContentStyle>
-          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ mb: 3, display: "flex", alignItems: "center" }}>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h4" gutterBottom>
                 Actualizar Personal
               </Typography>
-              <Typography sx={{ color: 'text.secondary' }}>
-                {' '}
+              <Typography sx={{ color: "text.secondary" }}>
+                {" "}
                 Actualiza la información de contacto, área y puesto dentro de tu
                 negocio.
               </Typography>

@@ -20,7 +20,7 @@ import useAuth from "../../../hooks/useAuth";
 import Page from "../../../components/Page";
 import DataReportsSection from "../../../components/report/DataReportsSection";
 // utils & routes
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { PATHS_EXTERNAL, PATH_APP } from "../../../routes/paths";
 // redux
 import { getBusinessAccount } from "../../../redux/slices/account";
@@ -83,7 +83,7 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
       enqueueSnackbar("No tienes acceso a los Reportes", {
         variant: "warning",
       });
-      mixtrack("reports_to_ordenes_redirect", {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",
         section: "",
@@ -135,7 +135,7 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
               variant="contained"
               color="primary"
               onClick={() => {
-                mixtrack("request_report_cta", {
+                track("set_checkout_option", {
                   visit: window.location.toString(),
                   page: "ListReports",
                   section: "",
@@ -193,7 +193,7 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
       enqueueSnackbar("No tienes acceso a los Reportes", {
         variant: "warning",
       });
-      mixtrack("reports_to_ordenes_redirect", {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",
         section: "",
@@ -322,47 +322,47 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
               minHeight: "60vh", // This makes sure the box takes up the full viewport height
             }}
           > */}
-            <Box
-              justifyContent={"center"}
-              alignItems={"center"}
-              sx={{
-                mb: theme.spacing(1),
-                px: theme.spacing(1),
-                mt: "auto", // This pushes the Grid to the bottom
-              }}
+          <Box
+            justifyContent={"center"}
+            alignItems={"center"}
+            sx={{
+              mb: theme.spacing(1),
+              px: theme.spacing(1),
+              mt: "auto", // This pushes the Grid to the bottom
+            }}
+          >
+            <Typography
+              variant="body2"
+              align="center"
+              color="text.secondary"
+              sx={{ mt: 1, px: 3 }}
             >
-              <Typography
-                variant="body2"
-                align="center"
-                color="text.secondary"
-                sx={{ mt: 1, px: 3 }}
+              Si necesitas un reporte personalizado, contáctanos y podemos
+              ayudarte.
+            </Typography>
+            {/* Button to request new Report */}
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+              <Button
+                startIcon={<Icon icon={analyticsFillIcon} />}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  track("set_checkout_option", {
+                    visit: window.location.toString(),
+                    page: "ListCustomReports",
+                    section: "",
+                  });
+                  window.open(
+                    PATHS_EXTERNAL.requestReport,
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
+                }}
               >
-                Si necesitas un reporte personalizado, contáctanos y podemos
-                ayudarte.
-              </Typography>
-              {/* Button to request new Report */}
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-                <Button
-                  startIcon={<Icon icon={analyticsFillIcon} />}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    mixtrack("request_report_cta", {
-                      visit: window.location.toString(),
-                      page: "ListCustomReports",
-                      section: "",
-                    });
-                    window.open(
-                      PATHS_EXTERNAL.requestReport,
-                      "_blank",
-                      "noopener,noreferrer"
-                    );
-                  }}
-                >
-                  Solicitar Reporte
-                </Button>
-              </Box>
+                Solicitar Reporte
+              </Button>
             </Box>
+          </Box>
           {/* </Box> */}
         </Grid>
       </Grid>

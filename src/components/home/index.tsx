@@ -15,7 +15,7 @@ import LoadingProgress from "../LoadingProgress";
 import { PATH_APP } from "../../routes/paths";
 // utils
 import { isAllowedTo } from "../../utils/permissions";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 // domain
 import { AllowedType } from "../../domain/auth/AccountPermissions";
 import DataInsightsSection from "./DataInsightsSection";
@@ -71,7 +71,7 @@ const HomeView: React.FC<HomeViewProps> = ({
       enqueueSnackbar("No tienes acceso a la Página de inicio", {
         variant: "warning",
       });
-      mixtrack("home_to_ordenes_redirect", {
+      track("screen_view", {
         visit: window.location.toString(),
         page: "Home",
         section: "",

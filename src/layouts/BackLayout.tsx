@@ -1,31 +1,31 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 // material
-import { styled } from '@mui/material/styles';
-import { IconButton, Typography } from '@mui/material';
-import { Icon } from '@iconify/react';
-import BackFill from '@iconify/icons-ic/navigate-before';
+import { styled } from "@mui/material/styles";
+import { IconButton, Typography } from "@mui/material";
+import { Icon } from "@iconify/react";
+import BackFill from "@iconify/icons-ic/navigate-before";
 // components
-import MHidden from '../components/extensions/MHidden';
-import { mixtrack } from '../utils/analytics';
+import MHidden from "../components/extensions/MHidden";
+import track from "../utils/analytics";
 //
 
 // ----------------------------------------------------------------------
 
-const HeaderStyle = styled('header')(({ theme }) => ({
+const HeaderStyle = styled("header")(({ theme }) => ({
   top: 0,
   zIndex: 9,
   lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  position: "absolute",
   padding: theme.spacing(2),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(3, 5, 0, 7)
+  justifyContent: "space-between",
+  [theme.breakpoints.up("md")]: {
+    alignItems: "flex-start",
+    padding: theme.spacing(3, 5, 0, 7),
     // padding: theme.spacing(7, 5, 0, 7)
-  }
+  },
 }));
 
 // ----------------------------------------------------------------------
@@ -40,14 +40,14 @@ const BackLayout: React.FC<BackLayoutProps> = ({ children }) => {
     <HeaderStyle>
       <IconButton
         onClick={() => {
-          mixtrack('back_click', {
+          track("select_item", {
             visit: window.location.toString(),
-            page: '',
-            section: 'TopBar'
+            page: "",
+            section: "TopBar",
           });
           navigate(-1);
         }}
-        size={'medium'}
+        size={"medium"}
       >
         <Icon icon={BackFill} width={32} height={32} />
       </IconButton>
@@ -56,7 +56,7 @@ const BackLayout: React.FC<BackLayoutProps> = ({ children }) => {
         <Typography
           variant="body2"
           sx={{
-            mt: { md: -2 }
+            mt: { md: -2 },
           }}
         >
           {children}

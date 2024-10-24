@@ -15,7 +15,7 @@ import LoadingProgress from "../components/LoadingProgress";
 // routes
 import { PATHS_EXTERNAL, PATH_APP } from "../routes/paths";
 import FixedAddButton from "../components/footers/FixedAddButton";
-import { mixtrack } from "../utils/analytics";
+import track from "../utils/analytics";
 
 // ----------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ export default function AccountDeleted() {
             {/* Help button */}
             <FixedAddButton
               onClick={() => {
-                mixtrack("deleted_account_help", {
+                track("select_content", {
                   visit: window.location.toString(),
                   page: "AccountDeleted",
                   section: "HelpBottomButton",

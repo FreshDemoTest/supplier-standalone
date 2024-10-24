@@ -24,7 +24,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchInput from "../SearchInput";
 // domain
 import { zipCodes } from "../../domain/account/zipCodes";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import {
   CfdiUses,
   FiscalRegimes,
@@ -70,7 +70,7 @@ const InvoicClientForm: React.FC<InvoiceClientFormProps> = ({
     <Accordion
       sx={{ mb: theme.spacing(2), py: theme.spacing(1) }}
       onChange={(e: any, expanded: boolean) => {
-        mixtrack("invoice_client_click", {
+        track("select_item", {
           visit: window.location.toString(),
           page: "Client",
           section: "InvoiceClientForm",

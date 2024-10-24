@@ -1,14 +1,13 @@
-import * as Yup from 'yup';
-import mixpanel from 'mixpanel-browser';
-import { useState } from 'react';
-import { Icon } from '@iconify/react';
-import { useSnackbar } from 'notistack';
-import { useFormik, Form, FormikProvider } from 'formik';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import closeFill from '@iconify/icons-eva/close-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import * as Yup from "yup";
+import { useState } from "react";
+import { Icon } from "@iconify/react";
+import { useSnackbar } from "notistack";
+import { useFormik, Form, FormikProvider } from "formik";
+import eyeFill from "@iconify/icons-eva/eye-fill";
+import closeFill from "@iconify/icons-eva/close-fill";
+import eyeOffFill from "@iconify/icons-eva/eye-off-fill";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 // material
 import {
   Stack,
@@ -16,29 +15,28 @@ import {
   IconButton,
   InputAdornment,
   Alert,
-  Typography
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+  Typography,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 // hooks
-import useAuth from '../../hooks/useAuth';
-import { useAppDispatch } from '../../redux/store';
+import useAuth from "../../hooks/useAuth";
+import { useAppDispatch } from "../../redux/store";
 import {
   raiseError,
   setUser,
-  startLoading
-} from '../../redux/slices/registration';
+  startLoading,
+} from "../../redux/slices/registration";
 // domain
-import { UserType } from '../../domain/account/User';
-// utils
-import { mixtrack } from '../../utils/analytics';
+import { UserType } from "../../domain/account/User";
+import track from "../../utils/analytics";
 //
 
 // ----------------------------------------------------------------------
 interface FirebaseAuthError extends firebase.auth.Error {}
 
 const firebaseErrors: any = {
-  'auth/email-already-in-use':
-    'Éste email ya está registrado. Puedes ir a iniciar sesión.'
+  "auth/email-already-in-use":
+    "Éste email ya está registrado. Puedes ir a iniciar sesión.",
 };
 
 type RegisterFormProps = {
@@ -48,13 +46,13 @@ type RegisterFormProps = {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
   userState = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    password: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
   },
-  editMode = false
+  editMode = false,
 }) => {
   const { register } = useAuth();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -64,23 +62,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string()
-      .min(2, '¡Nombre demasiado corto!')
-      .max(50, '¡Nombre demasiado largo!')
-      .required('Nombre es requerido.'),
+      .min(2, "¡Nombre demasiado corto!")
+      .max(50, "¡Nombre demasiado largo!")
+      .required("Nombre es requerido."),
     lastName: Yup.string()
-      .min(2, '¡Apellido demasiado corto!')
-      .max(50, '¡Apellido demasiado largo!')
-      .required('Apellido es requerido.'),
+      .min(2, "¡Apellido demasiado corto!")
+      .max(50, "¡Apellido demasiado largo!")
+      .required("Apellido es requerido."),
     email: Yup.string()
-      .email('¡Correo eléctronico inválido!')
-      .required('Correo electrónico es requerido.'),
+      .email("¡Correo eléctronico inválido!")
+      .required("Correo electrónico es requerido."),
     phoneNumber: Yup.string()
-      .length(10, '¡Teléfono debe de ser a 10 dígitos')
+      .length(10, "¡Teléfono debe de ser a 10 dígitos")
       .matches(/\d*/)
-      .required('Teléfono es requerido.'),
+      .required("Teléfono es requerido."),
     password: Yup.string()
-      .min(8, '¡Contraseña debe ser de al menos 8 caractéres!')
-      .required('Contraseña es requerida.')
+      .min(8, "¡Contraseña debe ser de al menos 8 caractéres!")
+      .required("Contraseña es requerida."),
   });
 
   const formik = useFormik({
@@ -89,7 +87,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     onSubmit: async (values, { setErrors, setSubmitting }) => {
       let steps = {
         firebase: false,
-        backend: false
+        backend: false,
       };
       try {
         // redux
@@ -99,7 +97,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           // firebase
           await register(
             values.email,
-            values.password || '',
+            values.password || "",
             values.firstName,
             values.lastName
           );
@@ -110,32 +108,30 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           dispatch(
             setUser({
               ...values,
-              firebaseId: fbuser?.uid || ''
+              firebaseId: fbuser?.uid || "",
             })
           );
           steps.backend = true;
-          // mixpanel identify user
-          mixpanel.identify(fbuser?.uid);
-          mixtrack('sign_up', {
+          track("sign_up", {
             email: values.email,
             firstName: values.firstName,
             lastName: values.lastName,
             phoneNumber: values.phoneNumber,
             firebaseId: fbuser?.uid,
             distinctId: fbuser?.uid,
-            transactionType: editMode ? 'update' : 'create',
+            transactionType: editMode ? "update" : "create",
             visit: window.location.toString(),
-            page: 'Register',
-            section: ''
+            page: "Register",
+            section: "",
           });
           // message
-          enqueueSnackbar('Registro exitoso', {
-            variant: 'success',
+          enqueueSnackbar("Registro exitoso", {
+            variant: "success",
             action: (key) => (
               <IconButton size="small" onClick={() => closeSnackbar(key)}>
                 <Icon icon={closeFill} />
               </IconButton>
-            )
+            ),
           });
         } else {
           // edit user
@@ -147,13 +143,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         setSubmitting(false);
       } catch (error: any) {
         console.error(error);
-        enqueueSnackbar('Error en registro', {
-          variant: 'error',
+        enqueueSnackbar("Error en registro", {
+          variant: "error",
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         });
         if (steps.firebase && !steps.backend) {
           // firebase - delete user if failed to create backend user
@@ -170,28 +166,28 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         // redux
         dispatch(raiseError(error));
         // track error
-        mixtrack('error', {
+        track("exception", {
           email: values.email,
           firstName: values.firstName,
           lastName: values.lastName,
           phoneNumber: values.phoneNumber,
           visit: window.location.toString(),
-          page: 'Register',
-          section: '',
-          error: error.toString()
+          page: "Register",
+          section: "",
+          error: error.toString(),
         });
       }
-    }
+    },
   });
 
   const { values, errors, touched, handleSubmit, isSubmitting, getFieldProps } =
     formik;
   const nonEmpty =
-    values.firstName !== '' &&
-    values.lastName !== '' &&
-    values.email !== '' &&
-    values.phoneNumber !== '' &&
-    values.password !== '';
+    values.firstName !== "" &&
+    values.lastName !== "" &&
+    values.email !== "" &&
+    values.phoneNumber !== "" &&
+    values.password !== "";
   const allValues = Object.keys(errors).length === 0;
 
   return (
@@ -208,12 +204,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             </Alert>
           )}
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
               fullWidth
               disabled={editMode}
               label="Nombre"
-              {...getFieldProps('firstName')}
+              {...getFieldProps("firstName")}
               error={Boolean(touched.firstName && errors.firstName)}
               helperText={touched.firstName && errors.firstName}
             />
@@ -222,7 +218,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               fullWidth
               disabled={editMode}
               label="Apellido(s)"
-              {...getFieldProps('lastName')}
+              {...getFieldProps("lastName")}
               error={Boolean(touched.lastName && errors.lastName)}
               helperText={touched.lastName && errors.lastName}
             />
@@ -234,11 +230,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="number"
             label="Teléfono"
             disabled={editMode}
-            {...getFieldProps('phoneNumber')}
+            {...getFieldProps("phoneNumber")}
             error={Boolean(touched.phoneNumber && errors.phoneNumber)}
             helperText={touched.phoneNumber && errors.phoneNumber}
             InputProps={{
-              startAdornment: <Typography>+52&nbsp;</Typography>
+              startAdornment: <Typography>+52&nbsp;</Typography>,
             }}
           />
 
@@ -248,7 +244,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="email"
             label="Correo electrónico"
             disabled={editMode}
-            {...getFieldProps('email')}
+            {...getFieldProps("email")}
             error={Boolean(touched.email && errors.email)}
             helperText={touched.email && errors.email}
           />
@@ -257,28 +253,22 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             <TextField
               fullWidth
               autoComplete="current-password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               label="Contraseña"
-              {...getFieldProps('password')}
+              {...getFieldProps("password")}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       edge="end"
                       onClick={() => {
-                        mixtrack('show_password', {
-                          visit: window.location.toString(),
-                          page: 'Register',
-                          section: '',
-                          showPassword: showPassword
-                        });
                         setShowPassword((prev) => !prev);
                       }}
                     >
                       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
               }}
               error={Boolean(touched.password && errors.password)}
               helperText={touched.password && errors.password}
@@ -295,7 +285,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               variant="contained"
               loading={isSubmitting}
             >
-              {editMode ? 'Actualizar perfil' : 'Registrarme'}
+              {editMode ? "Actualizar perfil" : "Registrarme"}
             </LoadingButton>
           )}
         </Stack>

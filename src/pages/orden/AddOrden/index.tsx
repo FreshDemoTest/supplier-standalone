@@ -24,7 +24,7 @@ import OrdenPickupView from "./OrdenPickup";
 import LoadingProgress from "../../../components/LoadingProgress";
 // utils
 import { delay } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { DeliveryType } from "../../../domain/supplier/SupplierProduct";
 import { clearClientToOrden } from "../../../redux/slices/client";
 
@@ -47,10 +47,10 @@ export const NEW_ORDEN_STEPS = [
 // ----------------------------------------------------------------------
 
 type AddOrdenProps = {
-  viewMode: 'orden' | 'reInvoice';
+  viewMode: "orden" | "reInvoice";
 };
 
-const AddOrden: React.FC<AddOrdenProps> = ({viewMode}) => {
+const AddOrden: React.FC<AddOrdenProps> = ({ viewMode }) => {
   const [searchParams] = useSearchParams();
   const theme = useTheme();
   const { hash } = useLocation();
@@ -95,7 +95,7 @@ const AddOrden: React.FC<AddOrdenProps> = ({viewMode}) => {
   const handleChange = async (event: SyntheticEvent, newValue: string) => {
     const ordenCpy = { ...newOrden };
     navigate(`#${newValue}`);
-    mixtrack("orden_type_tab_change", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "AddOrden",
       section: "OrdenTypeNavTabs",
@@ -168,10 +168,10 @@ const AddOrden: React.FC<AddOrdenProps> = ({viewMode}) => {
             </Box>
             {isLoading && <LoadingProgress sx={{ mt: 2 }} />}
             {activeTab === "delivery" && !isLoading && (
-              <OrdenDeliveryView clientId={clientId} viewMode={viewMode}/>
+              <OrdenDeliveryView clientId={clientId} viewMode={viewMode} />
             )}
             {activeTab === "pickup" && !isLoading && (
-              <OrdenPickupView clientId={clientId} viewMode={viewMode}/>
+              <OrdenPickupView clientId={clientId} viewMode={viewMode} />
             )}
           </Grid>
         </Grid>

@@ -35,7 +35,7 @@ import {
   findBillingPeriodEnd,
   findBillingPeriodStart,
 } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 // domain
 import {
   BusinessType,
@@ -66,7 +66,12 @@ const computeSaaSPlanDue = (
   // active charges
   charges.forEach((c) => {
     if (c.active === false) return;
-    if (["INVOICE_FOLIO", "MARKETPLACE_COMMISSION", "PAYMENTS"].includes(c.chargeType)) return;
+    if (
+      ["INVOICE_FOLIO", "MARKETPLACE_COMMISSION", "PAYMENTS"].includes(
+        c.chargeType
+      )
+    )
+      return;
     if (c.chargeType === "REPORTS") {
       // reports
       if (period === "year") {
@@ -112,20 +117,29 @@ type SaasPlanProps = {
   period: "month" | "year";
 };
 
-const SaaSPlan: React.FC<SaasPlanProps> = (
-  { charges, discountCharges, activeCedis, totalDue,
-    period = "month"
-  }) => {
-  const formatChargeMainDescription = (chargeType: string, chargeDescription: string) => {
+const SaaSPlan: React.FC<SaasPlanProps> = ({
+  charges,
+  discountCharges,
+  activeCedis,
+  totalDue,
+  period = "month",
+}) => {
+  const formatChargeMainDescription = (
+    chargeType: string,
+    chargeDescription: string
+  ) => {
     if (chargeType === "REPORTS") {
       return `Reporte ${chargeDescription}`;
     } else if (chargeType === "SAAS_FEE") {
       return chargeDescription || "Servicio de Software";
     }
     return chargeDescription;
-  }
+  };
 
-  const formatChargeSecondaryDescription = (chargeType: string, chargeDescription: string) => {
+  const formatChargeSecondaryDescription = (
+    chargeType: string,
+    chargeDescription: string
+  ) => {
     if (chargeType === "REPORTS") {
       return `Reporte`;
     } else if (chargeType === "SAAS_FEE") {
@@ -136,12 +150,12 @@ const SaaSPlan: React.FC<SaasPlanProps> = (
       return `Por Transacción`;
     }
     return chargeType;
-  }
+  };
 
   // render vars
   const rndrCharges = [...charges];
   // sort charges
-  rndrCharges.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1);
+  rndrCharges.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
 
   return (
     <Box sx={{ ml: 2, mr: 1 }}>
@@ -149,17 +163,30 @@ const SaaSPlan: React.FC<SaasPlanProps> = (
       {rndrCharges.map((c) => {
         if (c.active === false) return null;
         if (c.chargeType === "MARKETPLACE_COMMISSION") return null;
-        const chargeAmount = period === "year" ? c.chargeAmount * 12 : c.chargeAmount;
+        const chargeAmount =
+          period === "year" ? c.chargeAmount * 12 : c.chargeAmount;
         return (
           <ChargeConcept
             key={c.id}
-            chargeType={formatChargeMainDescription(c.chargeType, c.chargeDescription)}
-            chargeDescription={formatChargeSecondaryDescription(c.chargeType, c.chargeDescription)}
+            chargeType={formatChargeMainDescription(
+              c.chargeType,
+              c.chargeDescription
+            )}
+            chargeDescription={formatChargeSecondaryDescription(
+              c.chargeType,
+              c.chargeDescription
+            )}
             chargeUnit={fCurrency(chargeAmount)}
             chargeAmount={
               c.chargeType === "REPORTS"
                 ? chargeAmount
-                : (c.chargeType === "SAAS_FEE" ? activeCedis * chargeAmount : (c.chargeType === "INVOICE_FOLIO" ? 0 : "PAYMENTS" ? 0 : chargeAmount))
+                : c.chargeType === "SAAS_FEE"
+                ? activeCedis * chargeAmount
+                : c.chargeType === "INVOICE_FOLIO"
+                ? 0
+                : c.chargeType === "PAYMENTS"
+                ? 0
+                : chargeAmount
             }
             isTotal={false}
           />
@@ -168,7 +195,10 @@ const SaaSPlan: React.FC<SaasPlanProps> = (
       {/* Discounts */}
       {discountCharges?.map((dc) => {
         if (dc.validUpto < new Date()) return null;
-        const discountAmount = period === "year" ? dc.chargeDiscountAmount * 12 : dc.chargeDiscountAmount;
+        const discountAmount =
+          period === "year"
+            ? dc.chargeDiscountAmount * 12
+            : dc.chargeDiscountAmount;
         return (
           <ChargeConcept
             key={dc.id}
@@ -189,20 +219,26 @@ const SaaSPlan: React.FC<SaasPlanProps> = (
         );
       })}
       {/* Total  */}
-      {totalDue ? <>
-        <Divider sx={{ my: 1 }} />
-        {[{ key: "subtotal", label: "Subtotal" }, { key: "tax", label: "IVA 16%" }, { key: "total", label: "Total" }].map((t) => (
-          <ChargeConcept
-            key={t.key}
-            chargeType=""
-            chargeDescription=""
-            chargeUnit={t.label}
-            chargeAmount={totalDue[t.key as keyof typeof totalDue]}
-            isTotal={true}
-          />
-        ))}
-        <Divider sx={{ my: 1 }} />
-      </> : null}
+      {totalDue ? (
+        <>
+          <Divider sx={{ my: 1 }} />
+          {[
+            { key: "subtotal", label: "Subtotal" },
+            { key: "tax", label: "IVA 16%" },
+            { key: "total", label: "Total" },
+          ].map((t) => (
+            <ChargeConcept
+              key={t.key}
+              chargeType=""
+              chargeDescription=""
+              chargeUnit={t.label}
+              chargeAmount={totalDue[t.key as keyof typeof totalDue]}
+              isTotal={true}
+            />
+          ))}
+          <Divider sx={{ my: 1 }} />
+        </>
+      ) : null}
     </Box>
   );
 };
@@ -232,29 +268,30 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
   const mktFee = alimaAccount?.charges?.find(
     (c) => c.chargeType === "MARKETPLACE_COMMISSION"
   );
-  const billingPeriod = accountType.toLowerCase().includes("anual") ? "year" : "month";
+  const billingPeriod = accountType.toLowerCase().includes("anual")
+    ? "year"
+    : "month";
   // render vars
   const mktplaceActive = alimaAccount?.displayedInMarketplace || false;
   const mktplaceCommission = mktFee ? mktFee?.chargeAmount * 100 : 0;
-  const totalDue = computeSaaSPlanDue(alimaAccount.charges, alimaAccount.discounts, numCEDIS || 1, billingPeriod);
+  const totalDue = computeSaaSPlanDue(
+    alimaAccount.charges,
+    alimaAccount.discounts,
+    numCEDIS || 1,
+    billingPeriod
+  );
   const currentStartDate = alimaAccount?.account?.createdAt
-    ? findBillingPeriodStart(
-      alimaAccount?.account?.createdAt,
-      billingPeriod
-    )
+    ? findBillingPeriodStart(alimaAccount?.account?.createdAt, billingPeriod)
     : undefined;
   const currentEndDate = currentStartDate
-    ? findBillingPeriodEnd(
-      currentStartDate,
-      billingPeriod
-    )
+    ? findBillingPeriodEnd(currentStartDate, billingPeriod)
     : undefined;
 
   // update display_in_marketplace on Supplier Business Account
   const handleMktplaceActive = async () => {
     try {
       if (!sessionToken) return;
-      mixtrack("update_mktplace_visibility", {
+      track("select_content", {
         visit: window.location.toString(),
         page: "AlimaAccount",
         section: "AlimaAccountPlan",
@@ -393,7 +430,9 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
               {fCurrency(totalDue?.total)} MXN
             </b>
             .{mktFee ? ` Más la comisión de venta en Marketplace.` : ``}
-            {accountType === "ALIMA PRO" ? ` Más el excedente de folios incluidos en tu plan.` : ``}
+            {accountType === "ALIMA PRO"
+              ? ` Más el excedente de folios incluidos en tu plan.`
+              : ``}
           </StyledTypography>
 
           {/* Plan fees details */}
@@ -415,7 +454,8 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
             </Table>
           </TableContainer>
           {/* B2B SaaS */}
-          <SaaSPlan charges={alimaAccount.charges}
+          <SaaSPlan
+            charges={alimaAccount.charges}
             discountCharges={alimaAccount.discounts}
             activeCedis={numCEDIS || 1}
             totalDue={totalDue}
@@ -425,7 +465,10 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
           {/* Warning for Standard License */}
           {accountType === "STANDARD" && (
             <StyledTypography variant="subtitle2" mt={2}>
-              <i>** Nota: Servicio de Software es gratis para menos de 30 pedidos al mes</i>
+              <i>
+                ** Nota: Servicio de Software es gratis para menos de 30 pedidos
+                al mes
+              </i>
               <br />
             </StyledTypography>
           )}
@@ -433,7 +476,6 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
           {/* Alima B2B Marketplace */}
           {mktFee && (
             <Box sx={{ mt: 2 }}>
-
               <Divider sx={{ mt: 2, mb: 2 }} />
               <StyledTypography variant="subtitle2">
                 Alima B2B Marketplace
@@ -462,7 +504,7 @@ const AlimaAccountPlan: React.FC<AlimaAccountPlanProps> = ({
               variant="contained"
               color="primary"
               onClick={() => {
-                mixtrack("contact_sdr", {
+                track("select_content", {
                   visit: window.location.toString(),
                   page: "AlimaAccount",
                   section: "AlimaAccountPlan",

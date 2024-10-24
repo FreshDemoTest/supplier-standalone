@@ -15,7 +15,7 @@ import useAuth from "../../../hooks/useAuth";
 import { useSnackbar } from "notistack";
 // domain
 import { useAppDispatch } from "../../../redux/store";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { DragDropImages } from "../../DragDropFiles";
 import { addEcommerceImage } from "../../../redux/slices/account";
 
@@ -45,7 +45,7 @@ const EcommerceImageUploadModal: React.FC<EcommerceImageUploadModalProps> = ({
 
   const handleUploadImage = async () => {
     setLoading(true);
-    mixtrack("ecommerce_image_upload", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "EcommerceDetails",
       section: "EcommerceProductImageSelector",
@@ -73,7 +73,12 @@ const EcommerceImageUploadModal: React.FC<EcommerceImageUploadModalProps> = ({
       }
       // Add image
       await dispatch(
-        addEcommerceImage(sessionToken, files[0], supplierBusinessId, imageType || "logo")
+        addEcommerceImage(
+          sessionToken,
+          files[0],
+          supplierBusinessId,
+          imageType || "logo"
+        )
       );
 
       enqueueSnackbar(

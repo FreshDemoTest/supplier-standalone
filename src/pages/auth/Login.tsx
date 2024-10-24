@@ -26,7 +26,7 @@ import MHidden from "../../components/extensions/MHidden";
 // config
 import { pwaRelease } from "../../config";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import InstallPWAButton from "../../components/InstallPWAButton";
 
 // ----------------------------------------------------------------------
@@ -68,7 +68,7 @@ export default function Login() {
   };
 
   // const handleRegisterRedirect = () => {
-  //   mixtrack("register_redirect", {
+  //   track("register_redirect", {
   //     visit: window.location.toString(),
   //     page: "Login",
   //     section: "",
@@ -83,7 +83,7 @@ export default function Login() {
             to="/"
             sx={{ display: "inline-flex", paddingLeft: 5 }}
             onClick={() => {
-              mixtrack("alima_logo", {
+              track("view_item", {
                 visit: window.location.toString(),
                 page: "Login",
                 section: "AuthLayout",

@@ -7,7 +7,7 @@ import { useAppSelector } from "../../../redux/store";
 import { PATH_APP } from "../../../routes/paths";
 import ListNotInvoicedOrdenesView from "./ListNotInvoicedOrdenes";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 // components
 import Page from "../../../components/Page";
@@ -39,7 +39,7 @@ const AddInvoice: React.FC<{}> = () => {
   useEffect(() => {
     if (permissionsLoaded && !allowFacturasList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("facturas_to_not_allowed_redirect", {
+      track("screen_view", {
         visit: window.location.toString(),
         page: "ListInvoices",
         section: "",

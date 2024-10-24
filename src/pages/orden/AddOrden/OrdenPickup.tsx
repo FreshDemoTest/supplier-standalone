@@ -42,7 +42,7 @@ import { CartProductType } from "../../../domain/orden/Orden";
 // utils
 import { NEW_ORDEN_STEPS } from ".";
 import { delay, fISODate, isMinimumQtyReached } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { DeliveryType } from "../../../domain/supplier/SupplierProduct";
 
 // ----------------------------------------------------------------------
@@ -74,7 +74,9 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
   const { activeUnit, business } = useAppSelector((state) => state.account);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [changeMaxQuantity, setChangeMaxQuantity] = useState<string|undefined>(undefined);
+  const [changeMaxQuantity, setChangeMaxQuantity] = useState<
+    string | undefined
+  >(undefined);
 
   // on Mount
   useEffect(() => {
@@ -130,21 +132,20 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
             const cartProd = newOrden.cart.cartProducts.find(
               (cp: any) => cp.id === p.id
             );
-            let prod = { ...p }
+            let prod = { ...p };
             if (editMode) {
               const stockEnabled = p.stock
-                ? p.stock.active &&
-                !p.stock.keepSellingWithoutStock
+                ? p.stock.active && !p.stock.keepSellingWithoutStock
                 : false;
               if (stockEnabled) {
                 const unitMultiple = p.unitMultiple || 1;
-                const quantity = cartProd?.quantity || 0
+                const quantity = cartProd?.quantity || 0;
                 const editAmount = p.stock.amount + quantity * unitMultiple;
                 const editStock = {
                   ...p.stock,
-                  amount: editAmount
+                  amount: editAmount,
                 };
-                prod = { ...p, stock: editStock }
+                prod = { ...p, stock: editStock };
               }
             }
             return {
@@ -222,7 +223,7 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
   const handleNextStep = async () => {
     if (newOrdenCurrentStep < NEW_ORDEN_STEPS.length - 1) {
       dispatch(nextCurrentStep());
-      mixtrack("add_orden_steps", {
+      track("select_content", {
         step: newOrdenCurrentStep,
         visit: window.location.toString(),
         page: "Orden",
@@ -248,7 +249,7 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
           enqueueSnackbar("Pedido actualizado correctamente", {
             variant: "success",
           });
-          mixtrack("orden", {
+          track("view_item", {
             transactionType: "update",
             orderId: newOrden.id,
             visit: window.location.toString(),
@@ -264,7 +265,7 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
             variant: "error",
           });
           setIsSubmitting(false);
-          mixtrack("error", {
+          track("exception", {
             error: error.toString(),
             transactionType: "update",
             visit: window.location.toString(),
@@ -295,7 +296,7 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
           enqueueSnackbar("Pedido enviado correctamente", {
             variant: "success",
           });
-          mixtrack("orden", {
+          track("view_item", {
             transactionType: "create",
             visit: window.location.toString(),
             page: "Orden",
@@ -309,7 +310,7 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
             variant: "error",
           });
           setIsSubmitting(false);
-          mixtrack("error", {
+          track("exception", {
             error: error.toString(),
             transactionType: "create",
             visit: window.location.toString(),
@@ -353,48 +354,59 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
   const decreaseQtyFromCart = (product: CartProductType) => {
     const unitMultiple = product.supplierProduct.unitMultiple || 1;
     const minimumQuantity = product.supplierProduct.minimumQuantity || 1;
-    const maxQty = product.quantity === minimumQuantity*(1/unitMultiple) ? minimumQuantity*(1/unitMultiple) : 1;
+    const maxQty =
+      product.quantity === minimumQuantity * (1 / unitMultiple)
+        ? minimumQuantity * (1 / unitMultiple)
+        : 1;
     const qtyToRem = product.quantity - maxQty;
     dispatchProductQuantity(product, qtyToRem);
   };
 
-  const increaseQtyFromCart = (product: CartProductType,) => {
+  const increaseQtyFromCart = (product: CartProductType) => {
     const stockEnabled = product.supplierProduct.stock
       ? product.supplierProduct.stock.active &&
-      !product.supplierProduct.stock.keepSellingWithoutStock
+        !product.supplierProduct.stock.keepSellingWithoutStock
       : false;
     const stockAmount = product.supplierProduct.stock?.amount || 0;
     const hasStock = stockAmount > 0;
     const unitMultiple = product.supplierProduct.unitMultiple || 1;
     const minimumQuantity = product.supplierProduct.minimumQuantity || 1;
-    const minQty = product.quantity > 0 ? 1 : minimumQuantity*(1/unitMultiple);
+    const minQty =
+      product.quantity > 0 ? 1 : minimumQuantity * (1 / unitMultiple);
     const qtyToAdd = product.quantity + minQty;
 
     if (!stockEnabled) {
       dispatchProductQuantity(product, qtyToAdd);
-    }
-    else {
-      
+    } else {
       if (!hasStock) {
         // show alert("No hay stock disponible");
-        enqueueSnackbar(`No hay más inventario disponible de ${product.supplierProduct.productDescription}`, {
-          variant: "warning",
-        });
+        enqueueSnackbar(
+          `No hay más inventario disponible de ${product.supplierProduct.productDescription}`,
+          {
+            variant: "warning",
+          }
+        );
         setChangeMaxQuantity(product.supplierProduct.id);
-        return; 
+        return;
       }
-      const reachedStockOut = qtyToAdd*unitMultiple >= stockAmount;
+      const reachedStockOut = qtyToAdd * unitMultiple >= stockAmount;
       if (!reachedStockOut) {
         dispatchProductQuantity(product, qtyToAdd);
       } else {
         // show alert("No hay stock suficiente");
-        enqueueSnackbar(`No hay más inventario disponible de ${product.supplierProduct.productDescription}`, {
-          variant: "warning",
-        });
+        enqueueSnackbar(
+          `No hay más inventario disponible de ${product.supplierProduct.productDescription}`,
+          {
+            variant: "warning",
+          }
+        );
         if (stockAmount >= minimumQuantity) {
           // get last multiple of unitMultiple after stockAmount
-          const lastMultiple = roundDownToNearestMultiple(stockAmount, unitMultiple);
-          dispatchProductQuantity(product, lastMultiple*(1/unitMultiple));
+          const lastMultiple = roundDownToNearestMultiple(
+            stockAmount,
+            unitMultiple
+          );
+          dispatchProductQuantity(product, lastMultiple * (1 / unitMultiple));
           setChangeMaxQuantity(product.supplierProduct.id);
         } else {
           dispatchProductQuantity(product, 0);
@@ -405,38 +417,43 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
   };
 
   function convertToNumber(value: string | number): number {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       const result = parseFloat(value);
       if (isNaN(result)) {
         return 0;
       }
       return result;
-    } else if (typeof value === 'number') {
+    } else if (typeof value === "number") {
       return value;
     } else {
-      throw new Error('Value must be a string or a number');
+      throw new Error("Value must be a string or a number");
     }
   }
 
-  const changeQtyFromCart = (product: CartProductType, value: string | number) => {
+  const changeQtyFromCart = (
+    product: CartProductType,
+    value: string | number
+  ) => {
     const numberValue = convertToNumber(value);
     const unitMultiple = product.supplierProduct.unitMultiple || 1;
     const minimumQuantity = product.supplierProduct.minimumQuantity || 1;
     const stockEnabled = product.supplierProduct.stock
       ? product.supplierProduct.stock.active &&
-      !product.supplierProduct.stock.keepSellingWithoutStock
+        !product.supplierProduct.stock.keepSellingWithoutStock
       : false;
     const stockAmount = product.supplierProduct.stock?.amount || 0;
     const hasStock = stockAmount > 0;
     if (!stockEnabled) {
       dispatchProductQuantity(product, numberValue);
-    }
-    else {
+    } else {
       if (!hasStock) {
         // show alert("No hay stock disponible");
-        enqueueSnackbar(`No hay más inventario disponible de ${product.supplierProduct.productDescription}`, {
-          variant: "warning",
-        });
+        enqueueSnackbar(
+          `No hay más inventario disponible de ${product.supplierProduct.productDescription}`,
+          {
+            variant: "warning",
+          }
+        );
         setChangeMaxQuantity(product.supplierProduct.id);
         return;
       }
@@ -446,12 +463,18 @@ const OrdenPickupView: React.FC<OrdenPickupViewProps> = ({
         dispatchProductQuantity(product, numberValue);
       } else {
         // show alert("No hay stock suficiente");
-        enqueueSnackbar(`No hay más inventario disponible de ${product.supplierProduct.productDescription}`, {
-          variant: "warning",
-        });
+        enqueueSnackbar(
+          `No hay más inventario disponible de ${product.supplierProduct.productDescription}`,
+          {
+            variant: "warning",
+          }
+        );
         if (stockAmount >= minimumQuantity) {
-          const lastMultiple = roundDownToNearestMultiple(stockAmount, unitMultiple);
-          dispatchProductQuantity(product, lastMultiple*(1/unitMultiple));
+          const lastMultiple = roundDownToNearestMultiple(
+            stockAmount,
+            unitMultiple
+          );
+          dispatchProductQuantity(product, lastMultiple * (1 / unitMultiple));
           setChangeMaxQuantity(product.supplierProduct.id);
         } else {
           dispatchProductQuantity(product, 0);

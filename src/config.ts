@@ -12,11 +12,6 @@ interface firebaseConfigInterface {
   measurementId: string | undefined;
 }
 
-interface mixpanelConfigInterface {
-  token: string;
-  config: any;
-}
-
 interface stripeConfigInterface {
   publicKey: string;
 }
@@ -60,14 +55,6 @@ export const alimaApiConfig: apiConfigInterface = {
 
 export const googleAnalyticsConfig: string | undefined =
   process.env.REACT_APP_GA_MEASUREMENT_ID;
-
-export const mixpanelConfig: mixpanelConfigInterface = {
-  token: process.env.REACT_APP_MIXPANEL_ID || "",
-  config: {
-    debug: process.env.NODE_ENV !== "production",
-    persistence: "localStorage",
-  },
-};
 
 export const stripeConfig: stripeConfigInterface = {
   publicKey: process.env.REACT_APP_STRIPE_PUBLIC_KEY || "",

@@ -8,7 +8,7 @@ import SearchBar from "../SearchBar";
 import MHidden from "../extensions/MHidden";
 import { Icon } from "@iconify/react";
 import { PATH_APP } from "../../routes/paths";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { useNavigate } from "react-router";
 
 export type UnitsSectionProps = {
@@ -80,7 +80,7 @@ const UnitsSection: React.FC<UnitsSectionProps> = ({ units }) => {
               }
               onClick={() => {
                 navigate(PATH_APP.account.unit.add);
-                mixtrack("add_unit_click", {
+                track("select_item", {
                   visit: window.location.toString(),
                   section: "SearchBar",
                   page: "BusinessAccount",

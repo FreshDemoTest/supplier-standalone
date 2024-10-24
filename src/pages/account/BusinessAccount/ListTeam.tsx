@@ -22,7 +22,7 @@ import {
   getTeamMembers,
 } from "../../../redux/slices/account";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ const ListTeam: React.FC<{}> = () => {
             await dispatch(
               deleteTeamMember(userToDelete?.user?.id || "", sessionToken || "")
             );
-            mixtrack("delete_employee", {
+            track("select_content", {
               businessId: business.id,
               supplierUserId: userToDelete?.user?.id || "",
               visit: window.location.toString(),
@@ -155,7 +155,7 @@ const ListTeam: React.FC<{}> = () => {
                 />
               }
               onClick={() => {
-                mixtrack("add_employee_click", {
+                track("select_content", {
                   businessId: business.id,
                   visit: window.location.toString(),
                   page: "Account",

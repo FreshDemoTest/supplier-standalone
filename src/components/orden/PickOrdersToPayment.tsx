@@ -38,7 +38,7 @@ import {
   inXTime,
   normalizeText,
 } from "../../utils/helpers";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 // domain
 import {
   decodeOrdenStatusTypes,
@@ -290,7 +290,7 @@ const PickPaymentToOrdersSection: React.FC<PickOrdersSectionProps> = ({
   // date range
   const handleDateFilters = (filts: any) => {
     dispatch(setActiveOrdenesDateRange(filts));
-    mixtrack("filter_dates_active_ordenes", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Ordenes",
       section: "SearchBar",
@@ -307,7 +307,7 @@ const PickPaymentToOrdersSection: React.FC<PickOrdersSectionProps> = ({
         dateRange: dateRange,
       })
     );
-    mixtrack("filter_active_ordenes", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Ordenes",
       section: "SearchBar",

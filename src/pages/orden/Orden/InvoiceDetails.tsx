@@ -43,7 +43,7 @@ import {
   fISODate,
   fileToString,
 } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 // components
 import BasicDialog from "../../../components/navigation/BasicDialog";
 import { DynamicLoader } from "../../../components/DynamicLoader";
@@ -246,7 +246,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
       variant: "info",
       autoHideDuration: 500,
     });
-    mixtrack("orden_details_generate_invoice", {
+    track("checkout_progress", {
       visit: window.location.toString(),
       page: "OrdenDetails",
       section: "InvoiceDetails",
@@ -347,7 +347,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
       action: () => {
         setCancelPopoverOpen(true);
         setOpenOptions(false);
-        mixtrack("cancel_invoice_open", {
+        track("refund", {
           visit: window.location.toString(),
           page: "InvoiceDetails",
           section: "Actions",
@@ -360,7 +360,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
       action: () => {
         navigate(PATH_APP.invoice.reInvoice.replace(":ordenId", ordenId));
         setOpenOptions(false);
-        mixtrack("reinvoice_orden_open", {
+        track("select_content", {
           visit: window.location.toString(),
           page: "InvoiceDetails",
           section: "Actions",
@@ -372,7 +372,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
       active: navigator.share,
       action: () => {
         handlePrintInvoice();
-        mixtrack("print_invoice_click", {
+        track("select_content", {
           visit: window.location.toString(),
           page: "InvoiceDetails",
           section: "Actions",
@@ -625,7 +625,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
                             ordenId
                           )
                         );
-                        mixtrack("reinvoice_orden_open", {
+                        track("view_item", {
                           visit: window.location.toString(),
                           page: "ReInvoice",
                           section: "FixedAddButton",

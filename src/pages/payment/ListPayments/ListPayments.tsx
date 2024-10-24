@@ -41,7 +41,7 @@ import {
 import { getActiveClients } from "../../../redux/slices/client";
 // utils
 import { createBlobURI, fISODate } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { PATH_APP } from "../../../routes/paths";
 
 // ----------------------------------------------------------------------
@@ -191,7 +191,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
   // date range
   const handleDateFilters = (filts: any) => {
     dispatch(setActivePagosDateRange(filts));
-    mixtrack("filter_dates_active_pagos", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Pagos",
       section: "SearchBar",
@@ -207,7 +207,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
     navigate({
       search: searchParams.toString(),
     });
-    mixtrack("search_active_pagos", {
+    track("search", {
       visit: window.location.toString(),
       page: "Pagos",
       section: "SearchBar",
@@ -242,7 +242,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
         dateRange: dateRange,
       })
     );
-    mixtrack("filter_active_pagos", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Pagos",
       section: "SearchBar",
@@ -283,7 +283,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_historic_pagos_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Pagos",
         section: "SearchBar",
@@ -294,7 +294,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_historic_pagos_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Pagos",
         section: "SearchBar",
@@ -449,7 +449,7 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
               }
               onClick={() => {
                 navigate(PATH_APP.payment.add);
-                mixtrack("add_payment_click", {
+                track("add_payment_info", {
                   visit: window.location.toString(),
                   section: "SearchBar",
                   page: "AddPayment",

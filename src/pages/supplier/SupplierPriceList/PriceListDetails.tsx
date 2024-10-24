@@ -48,7 +48,7 @@ import { ClientProfileType } from "../../../domain/client/Client";
 import { PATH_APP } from "../../../routes/paths";
 import { createBlobURI, inXTime } from "../../../utils/helpers";
 import BasicDialog from "../../../components/navigation/BasicDialog";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { enqueueSnackbar } from "notistack";
 import SupplierProductPriceListToolbar from "../../../components/supplier/SupplierProductPriceListToolbar";
 
@@ -174,7 +174,7 @@ export default function PriceListDetails() {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_price_list_${xformat}`, {
+      track("view_item", {
         visit: window.location.toString(),
         page: "Price List view",
         section: "Options",
@@ -185,7 +185,7 @@ export default function PriceListDetails() {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_price_list_${xformat}`, {
+      track("view_item", {
         visit: window.location.toString(),
         page: "Price List View",
         section: "Options",

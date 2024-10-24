@@ -41,7 +41,7 @@ import {
   paymentMethods,
 } from "../../domain/orden/Orden";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { fCurrency, fISODate, fQuantity } from "../../utils/helpers";
 // components
 import BasicDialog from "../navigation/BasicDialog";
@@ -403,7 +403,7 @@ const OrdenDetailsView: React.FC<OrdenDetailsViewProps> = ({
               setOpenDeleteBranchMenu(false);
               // reload
               window.location.reload();
-              mixtrack("orden_cancel", {
+              track("refund", {
                 visit: window.location.toString(),
                 page: "OrdenDetails",
                 section: "OrdenDetailsMenu",

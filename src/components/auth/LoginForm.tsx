@@ -1,10 +1,10 @@
-import * as Yup from 'yup';
-import { useState } from 'react';
-import { useSnackbar } from 'notistack';
-import { Link as RouterLink } from 'react-router-dom';
-import { useFormik, Form, FormikProvider } from 'formik';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import * as Yup from "yup";
+import { useState } from "react";
+import { useSnackbar } from "notistack";
+import { Link as RouterLink } from "react-router-dom";
+import { useFormik, Form, FormikProvider } from "formik";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 // material
 import {
   Link,
@@ -14,26 +14,26 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  FormControlLabel
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { Icon } from '@iconify/react';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import closeFill from '@iconify/icons-eva/close-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
+  FormControlLabel,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Icon } from "@iconify/react";
+import eyeFill from "@iconify/icons-eva/eye-fill";
+import closeFill from "@iconify/icons-eva/close-fill";
+import eyeOffFill from "@iconify/icons-eva/eye-off-fill";
 // routes
-import { PATH_AUTH } from '../../routes/paths';
+import { PATH_AUTH } from "../../routes/paths";
 // hooks
-import useAuth from '../../hooks/useAuth';
+import useAuth from "../../hooks/useAuth";
 // utils
-import { mixtrack } from '../../utils/analytics';
+import track from "../../utils/analytics";
 
 // ----------------------------------------------------------------------
 interface FirebaseAuthError extends firebase.auth.Error {}
 
 const firebaseErrors: any = {
-  'auth/user-not-found': 'Usuario parece no estar registrado.',
-  'auth/wrong-password': 'Contraseña incorrecta'
+  "auth/user-not-found": "Usuario parece no estar registrado.",
+  "auth/wrong-password": "Contraseña incorrecta",
 };
 
 export default function LoginForm() {
@@ -43,35 +43,35 @@ export default function LoginForm() {
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
-      .email('Usuario tiene que ser un email válido')
-      .required('Usuario es requerido'),
-    password: Yup.string().required('Contraseña es requerida')
+      .email("Usuario tiene que ser un email válido")
+      .required("Usuario es requerido"),
+    password: Yup.string().required("Contraseña es requerida"),
   });
 
   const formik = useFormik({
     initialValues: {
-      email: '',
-      password: '',
-      remember: true
+      email: "",
+      password: "",
+      remember: true,
     },
     validationSchema: LoginSchema,
     onSubmit: async (values, { setErrors, setSubmitting, resetForm }) => {
       try {
         await login(values.email, values.password);
-        mixtrack('login', {
+        track("login", {
           email: values.email,
           remember: values.remember,
           visit: window.location.toString(),
-          page: 'Login',
-          section: ''
+          page: "Login",
+          section: "",
         });
-        enqueueSnackbar('Acceso correcto', {
-          variant: 'success',
+        enqueueSnackbar("Acceso correcto", {
+          variant: "success",
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         });
         setSubmitting(false);
       } catch (error: any) {
@@ -85,15 +85,15 @@ export default function LoginForm() {
         } else {
           setErrors({ email: (error as FirebaseAuthError).message });
         }
-        mixtrack('error', {
+        track("exception", {
           email: values.email,
           visit: window.location.toString(),
-          page: 'Login',
-          section: '',
-          error: error.toString()
+          page: "Login",
+          section: "",
+          error: error.toString(),
         });
       }
-    }
+    },
   });
 
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } =
@@ -114,7 +114,7 @@ export default function LoginForm() {
             autoComplete="username"
             type="email"
             label="Correo electrónico"
-            {...getFieldProps('email')}
+            {...getFieldProps("email")}
             error={Boolean(touched.email && errors.email)}
             helperText={touched.email && errors.email}
           />
@@ -122,9 +122,9 @@ export default function LoginForm() {
           <TextField
             fullWidth
             autoComplete="current-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             label="Contraseña"
-            {...getFieldProps('password')}
+            {...getFieldProps("password")}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -132,7 +132,7 @@ export default function LoginForm() {
                     <Icon icon={showPassword ? eyeFill : eyeOffFill} />
                   </IconButton>
                 </InputAdornment>
-              )
+              ),
             }}
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}
@@ -148,7 +148,7 @@ export default function LoginForm() {
           <FormControlLabel
             control={
               <Checkbox
-                {...getFieldProps('remember')}
+                {...getFieldProps("remember")}
                 checked={values.remember}
               />
             }
@@ -159,11 +159,11 @@ export default function LoginForm() {
             variant="subtitle2"
             to={PATH_AUTH.resetPassword}
             onClick={() => {
-              mixtrack('forgot_password', {
+              track("exception", {
                 email: values.email,
                 visit: window.location.toString(),
-                page: 'Login',
-                section: ''
+                page: "Login",
+                section: "",
               });
             }}
           >

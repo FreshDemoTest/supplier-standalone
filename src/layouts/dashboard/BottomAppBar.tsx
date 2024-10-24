@@ -20,7 +20,7 @@ import {
 import MHidden from "../../components/extensions/MHidden";
 import { useState } from "react";
 import { PATH_APP } from "../../routes/paths";
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 
 // ----------------------------------------------------------------------
 
@@ -180,7 +180,7 @@ const BottomAppBar = () => {
 
   const goToSection = (sectionPath: string) => {
     navigate(sectionPath);
-    mixtrack("navigation", {
+    track("screen_view", {
       visit: window.location.toString(),
       page: "",
       section: "BottomAppBar",

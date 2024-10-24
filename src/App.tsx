@@ -1,5 +1,4 @@
 import React from 'react';
-import mixpanel from 'mixpanel-browser';
 // themes
 import ThemeConfig from './themes';
 import NotistackProvider from './components/NotistackProvider';
@@ -12,10 +11,6 @@ import useAuth from './hooks/useAuth';
 import LoadingScreen from './components/LoadingScreen';
 import ScrollToTop from './components/ScrollToTop';
 import GoogleAnalytics from './components/GoogleAnalytics';
-// config
-import { mixpanelConfig } from './config';
-
-mixpanel.init(mixpanelConfig.token, mixpanelConfig.config);
 
 const App: React.FC = () => {
   const { isInitialized } = useAuth();

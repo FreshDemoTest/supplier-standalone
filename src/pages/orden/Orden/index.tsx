@@ -9,7 +9,7 @@ import { S3Tab, StyledTabs } from "../../../styles/navtabs/NavTabs";
 import Page from "../../../components/Page";
 import OrdenDetails from "./OrdenDetails";
 import InvoiceDetailsView from "./InvoiceDetails";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import PaymentDetailsView from "./PaymentDetails";
 
 // ----------------------------------------------------------------------
@@ -45,7 +45,7 @@ const OrdenPage: React.FC<OrdenPageProps> = ({ viewMode, title, ordenId }) => {
         ? "Factura | Alima"
         : "Pago | Alima"
     );
-    mixtrack("orden_details_tab_change", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "OrdenDetails",
       section: "OrdenDetailsNavTabs",

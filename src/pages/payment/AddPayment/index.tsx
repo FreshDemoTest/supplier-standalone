@@ -7,7 +7,7 @@ import { useAppSelector } from "../../../redux/store";
 import { PATH_APP } from "../../../routes/paths";
 
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 // components
 import Page from "../../../components/Page";
@@ -40,7 +40,7 @@ const AddPayment: React.FC<{}> = () => {
   useEffect(() => {
     if (permissionsLoaded && !allowPaymentList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("facturas_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "ListInvoices",
         section: "",

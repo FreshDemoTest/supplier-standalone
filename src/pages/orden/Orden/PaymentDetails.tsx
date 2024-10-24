@@ -36,7 +36,7 @@ import {
 import BasicDialog from "../../../components/navigation/BasicDialog";
 import LoadingProgress from "../../../components/LoadingProgress";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { fCurrency, fDateTime } from "../../../utils/helpers";
 import PaymentReceiptFormModal from "../../../components/payment/PaymentReceiptFormModal";
 import PaymentReceiptCardItem from "../../../components/payment/PaymentReceiptCardItem";
@@ -134,7 +134,7 @@ const PaymentDetailsView: React.FC<PaymentDetailsViewProps> = ({ ordenId }) => {
   };
 
   const handleUpdatePaymentStatus = async () => {
-    mixtrack("orden_details_update_payment", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "OrdenDetails",
       section: "PaymentDetails",
@@ -232,20 +232,20 @@ const PaymentDetailsView: React.FC<PaymentDetailsViewProps> = ({ ordenId }) => {
       <PaymentReceiptFormModal
         open={openAddReceiptDialog}
         onClose={(valid: boolean) => {
-            dispatch(getPaymentDetails(ordenId, sessionToken || ""));
-            setPayReceiptState({
-              ordenes: [
-                {
-                  ordenId: ordenDetails.ordenId,
-                } as PaymentReceiptOrdenType,
-              ],
-              id: undefined,
-              createdAt: undefined,
-              createdBy: undefined,
-              evidenceFile: undefined,
-              lastUpdated: undefined,
-              paymentValue:undefined,
-            });
+          dispatch(getPaymentDetails(ordenId, sessionToken || ""));
+          setPayReceiptState({
+            ordenes: [
+              {
+                ordenId: ordenDetails.ordenId,
+              } as PaymentReceiptOrdenType,
+            ],
+            id: undefined,
+            createdAt: undefined,
+            createdBy: undefined,
+            evidenceFile: undefined,
+            lastUpdated: undefined,
+            paymentValue: undefined,
+          });
           setEditReceipt(false);
           setOpenAddReceiptDialog(false);
         }}

@@ -1,10 +1,10 @@
-import * as Yup from 'yup';
-import { useState } from 'react';
+import * as Yup from "yup";
+import { useState } from "react";
 // material
-import { Icon } from '@iconify/react';
-import { useSnackbar } from 'notistack';
-import { useFormik, Form, FormikProvider } from 'formik';
-import closeFill from '@iconify/icons-eva/close-fill';
+import { Icon } from "@iconify/react";
+import { useSnackbar } from "notistack";
+import { useFormik, Form, FormikProvider } from "formik";
+import closeFill from "@iconify/icons-eva/close-fill";
 import {
   Stack,
   TextField,
@@ -13,30 +13,27 @@ import {
   Typography,
   Grid,
   MenuItem,
-  useTheme
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+  useTheme,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 // redux
-import {
-  addClient,
-  editClient
-} from '../../redux/slices/client';
+import { addClient, editClient } from "../../redux/slices/client";
 // hooks
-import useAuth from '../../hooks/useAuth';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import useAuth from "../../hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 // components
-import SearchInput from '../SearchInput';
+import SearchInput from "../SearchInput";
 // domain
 import {
   ClientBranchType,
   ClientPOCType,
-  ClientInvoiceInfoType
-} from '../../domain/client/Client';
-import { estatesMx, zipCodes } from '../../domain/account/zipCodes';
-import { mixtrack } from '../../utils/analytics';
-import BasicDialog from '../navigation/BasicDialog';
-import InvoicClientForm from '../account/InvoiceClientForm';
-import { KeyValueOption, MultiKeyValueInput } from '../MultiKeyValueInput';
+  ClientInvoiceInfoType,
+} from "../../domain/client/Client";
+import { estatesMx, zipCodes } from "../../domain/account/zipCodes";
+import track from "../../utils/analytics";
+import BasicDialog from "../navigation/BasicDialog";
+import InvoicClientForm from "../account/InvoiceClientForm";
+import { KeyValueOption, MultiKeyValueInput } from "../MultiKeyValueInput";
 
 // ----------------------------------------------------------------------
 
@@ -49,31 +46,31 @@ type ClientFormProps = {
 const ClientForm: React.FC<ClientFormProps> = ({
   onSuccessCallback,
   clientState = {
-    branchName: '',
+    branchName: "",
     // clientCategory: '',
-    street: '',
-    externalNum: '',
-    internalNum: '',
-    neighborhood: '',
-    city: '',
-    estate: '',
-    country: 'México',
-    zipCode: '',
-    displayName: '',
-    email: '',
-    phoneNumber: '',
-    taxId: '', // RFC in Mexico
-    fiscalRegime: '',
-    taxName: '',
-    taxAddress: '',
-    cfdiUse: '',
-    taxZipCode: '',
-    invoiceEmail: '',
+    street: "",
+    externalNum: "",
+    internalNum: "",
+    neighborhood: "",
+    city: "",
+    estate: "",
+    country: "México",
+    zipCode: "",
+    displayName: "",
+    email: "",
+    phoneNumber: "",
+    taxId: "", // RFC in Mexico
+    fiscalRegime: "",
+    taxName: "",
+    taxAddress: "",
+    cfdiUse: "",
+    taxZipCode: "",
+    invoiceEmail: "",
     invoicePaymentMethod: undefined,
     invoicingTrigger: undefined,
     tags: [],
   },
-  editMode = false
+  editMode = false,
 }) => {
   const theme = useTheme();
   const [openConfirmDiag, setOpenConfirmDiag] = useState(false);
@@ -136,19 +133,19 @@ const ClientForm: React.FC<ClientFormProps> = ({
     city?: string;
   }) => {
     // update formik values
-    setFieldValue('neighborhood', option.label);
-    setFieldValue('estate', option.estate);
-    setFieldValue('zipCode', option.value);
+    setFieldValue("neighborhood", option.label);
+    setFieldValue("estate", option.estate);
+    setFieldValue("zipCode", option.value);
     if (option.city) {
-      setFieldValue('city', option.city);
+      setFieldValue("city", option.city);
     }
   };
 
   const ClientSchema = Yup.object().shape({
     branchName: Yup.string()
-      .min(2, '¡Nombre demasiado corto!')
-      .max(255, '¡Nombre demasiado largo!')
-      .required('Nombre del Cliente es requerido.'),
+      .min(2, "¡Nombre demasiado corto!")
+      .max(255, "¡Nombre demasiado largo!")
+      .required("Nombre del Cliente es requerido."),
     // clientCategory: Yup.string()
     //   .oneOf(
     //     clientCategories.length > 0
@@ -157,14 +154,14 @@ const ClientForm: React.FC<ClientFormProps> = ({
     //   )
     //   .required('Categoría del Cliente es requerido.'),
     street: Yup.string()
-      .min(3, '¡Calle demasiado corta!')
-      .required('Calle es requerido.'),
+      .min(3, "¡Calle demasiado corta!")
+      .required("Calle es requerido."),
     externalNum: Yup.string()
-      .max(255, '¡Numero exterior demasiado largo, Máx. 255 caractéres!')
-      .required('Número exterior es requerido.'),
+      .max(255, "¡Numero exterior demasiado largo, Máx. 255 caractéres!")
+      .required("Número exterior es requerido."),
     internalNum: Yup.string().max(
       255,
-      '¡Numero interior demasiado largo, Máx. 255 caractéres!'
+      "¡Numero interior demasiado largo, Máx. 255 caractéres!"
     ),
     // neighborhood: Yup.string()
     //   .max(255, '¡Colonia es demasiado larga, Máx. 255 caractéres!')
@@ -184,31 +181,31 @@ const ClientForm: React.FC<ClientFormProps> = ({
     //   .required('Código postal es requerido.'),
     // additional invoice info
     displayName: Yup.string()
-      .min(2, '¡Nombre del Contacto demasiado corto!')
-      .max(255, '¡Nombre del Contacto demasiado largo!')
-      .required('Nombre del Contacto del Cliente es requerido.'),
+      .min(2, "¡Nombre del Contacto demasiado corto!")
+      .max(255, "¡Nombre del Contacto demasiado largo!")
+      .required("Nombre del Contacto del Cliente es requerido."),
     phoneNumber: Yup.string()
-      .length(10, '¡Teléfono debe de ser a 10 dígitos')
+      .length(10, "¡Teléfono debe de ser a 10 dígitos")
       .matches(/\d*/)
-      .required('Teléfono es requerido.'),
-    email: Yup.string().email('Email inválido').required('Email es requerido.'),
+      .required("Teléfono es requerido."),
+    email: Yup.string().email("Email inválido").required("Email es requerido."),
     // additional invoice info
-    taxId: Yup.string().max(14, 'RFC es inválido!'),
+    taxId: Yup.string().max(14, "RFC es inválido!"),
     fiscalRegime: Yup.string(),
     taxName: Yup.string().max(
       511,
-      'Razón Social / Nombre es demasiado largo, Máx. 500 caractéres!'
+      "Razón Social / Nombre es demasiado largo, Máx. 500 caractéres!"
     ),
     taxAddress: Yup.string().max(
       511,
-      'Dirección Fiscal es demasiado larga, Máx. 500 caractéres!'
+      "Dirección Fiscal es demasiado larga, Máx. 500 caractéres!"
     ),
     cfdiUse: Yup.string(),
     taxZipCode: Yup.string()
-      .length(5, '¡Código postal debe de ser a 5 dígitos')
+      .length(5, "¡Código postal debe de ser a 5 dígitos")
       .matches(/\d*/),
-    invoiceEmail: Yup.string().email('Email inválido'),
-    tags: Yup.array(Yup.mixed())
+    invoiceEmail: Yup.string().email("Email inválido"),
+    tags: Yup.array(Yup.mixed()),
   });
 
   const formik = useFormik({
@@ -218,35 +215,43 @@ const ClientForm: React.FC<ClientFormProps> = ({
       try {
         if (!activeUnit?.id) {
           enqueueSnackbar(
-            'No tienes una CEDIS activo. Por favor crea uno antes de agregar al cliente.',
+            "No tienes una CEDIS activo. Por favor crea uno antes de agregar al cliente.",
             {
-              variant: 'warning',
-              autoHideDuration: 5000
+              variant: "warning",
+              autoHideDuration: 5000,
             }
           );
           setSubmitting(false);
           return;
         }
-        if (!values.zipCode || !values.neighborhood || !values.city || !values.estate) {
-          const validationValue = !values.zipCode ? "el Código Postal" : !values.neighborhood ? "la Colonia" : !values.city ? "el Municipio/Alcaldía" : "el Estado";
-          enqueueSnackbar(
-            `Ingresa ${validationValue}.`,
-            {
-              variant: 'warning',
-              autoHideDuration: 5000
-            }
-          );
+        if (
+          !values.zipCode ||
+          !values.neighborhood ||
+          !values.city ||
+          !values.estate
+        ) {
+          const validationValue = !values.zipCode
+            ? "el Código Postal"
+            : !values.neighborhood
+            ? "la Colonia"
+            : !values.city
+            ? "el Municipio/Alcaldía"
+            : "el Estado";
+          enqueueSnackbar(`Ingresa ${validationValue}.`, {
+            variant: "warning",
+            autoHideDuration: 5000,
+          });
           setSubmitting(false);
           return;
         }
         const isInvoiceInfoValid =
-          values.taxId !== '' &&
-          values.fiscalRegime !== '' &&
-          values.taxName !== '' &&
-          values.taxAddress !== '' &&
-          values.cfdiUse !== '' &&
-          values.taxZipCode !== '' &&
-          values.invoiceEmail !== '' &&
+          values.taxId !== "" &&
+          values.fiscalRegime !== "" &&
+          values.taxName !== "" &&
+          values.taxAddress !== "" &&
+          values.cfdiUse !== "" &&
+          values.taxZipCode !== "" &&
+          values.invoiceEmail !== "" &&
           values.invoicePaymentMethod &&
           values.invoicingTrigger;
         if (!isInvoiceInfoValid && !confirmedSave) {
@@ -260,10 +265,10 @@ const ClientForm: React.FC<ClientFormProps> = ({
           await dispatch(
             addClient(
               {
-                ...values
+                ...values,
               },
               activeUnit.id,
-              sessionToken || ''
+              sessionToken || ""
             )
           );
         } else {
@@ -271,10 +276,10 @@ const ClientForm: React.FC<ClientFormProps> = ({
           await dispatch(
             editClient(
               {
-                ...values
+                ...values,
               },
               activeUnit.id,
-              sessionToken || ''
+              sessionToken || ""
             )
           );
         }
@@ -282,37 +287,38 @@ const ClientForm: React.FC<ClientFormProps> = ({
         setSubmitting(false);
         // callback - check if invoice info is valid. If so Callback is false.
         onSuccessCallback(true);
-        mixtrack('add_client', {
+        track("set_checkout_option", {
           visit: window.location.toString(),
-          page: 'AddClient',
-          section: 'ClientForm',
-          operation: editMode ? 'edit' : 'add',
-          method: 'onSubmit'
+          page: "AddClient",
+          section: "ClientForm",
+          operation: editMode ? "edit" : "add",
+          method: "onSubmit",
         });
       } catch (error: any) {
         console.error(error);
         enqueueSnackbar(
-          `Error ${editMode ? 'actualizando' : 'creando'
+          `Error ${
+            editMode ? "actualizando" : "creando"
           } cliente. Por favor intenta de nuevo.`,
           {
-            variant: 'error',
+            variant: "error",
             action: (key) => (
               <IconButton size="small" onClick={() => closeSnackbar(key)}>
                 <Icon icon={closeFill} />
               </IconButton>
-            )
+            ),
           }
         );
         setSubmitting(false);
-        mixtrack('error', {
+        track("exception", {
           visit: window.location.toString(),
-          page: 'AddClient',
-          section: 'ClientForm',
-          method: 'onSubmit',
-          error: error.toString()
+          page: "AddClient",
+          section: "ClientForm",
+          method: "onSubmit",
+          error: error.toString(),
         });
       }
-    }
+    },
   });
 
   const {
@@ -322,20 +328,20 @@ const ClientForm: React.FC<ClientFormProps> = ({
     handleSubmit,
     isSubmitting,
     getFieldProps,
-    setFieldValue
+    setFieldValue,
   } = formik;
   const isFormFull =
-    values.branchName !== '' &&
-    values.clientCategory !== '' &&
-    values.street !== '' &&
-    values.externalNum !== '' &&
+    values.branchName !== "" &&
+    values.clientCategory !== "" &&
+    values.street !== "" &&
+    values.externalNum !== "" &&
     // values.neighborhood !== '' &&
     // values.city !== '' &&
     // values.estate !== '' &&
     // values.zipCode !== '' &&
-    values.phoneNumber !== '' &&
-    values.email !== '' &&
-    values.displayName !== '';
+    values.phoneNumber !== "" &&
+    values.email !== "" &&
+    values.displayName !== "";
   const hasErrors = !(Object.keys(errors).length === 0);
 
   const handleConfirm = (validationReminder: boolean) => {
@@ -361,20 +367,20 @@ const ClientForm: React.FC<ClientFormProps> = ({
         msg="Parece ser que no agregaste la información de facturación del cliente."
         continueAction={{
           active: true,
-          msg: 'Guardar de todos modos',
-          actionFn: () => handleConfirm(true)
+          msg: "Guardar de todos modos",
+          actionFn: () => handleConfirm(true),
         }}
         backAction={{
           active: true,
-          msg: 'Regresar',
-          actionFn: () => setOpenConfirmDiag(false)
+          msg: "Regresar",
+          actionFn: () => setOpenConfirmDiag(false),
         }}
         closeMark={false}
         onClose={() => handleConfirm(false)}
       >
         <Typography>
           <br />
-          Sino la agregas no sé podrán realizar las{' '}
+          Sino la agregas no sé podrán realizar las{" "}
           <b>facturas en automático</b>.
           <br />
         </Typography>
@@ -384,20 +390,21 @@ const ClientForm: React.FC<ClientFormProps> = ({
           <Stack spacing={2}>
             {hasErrors && isFormFull && (
               <Alert severity="error">
-                {errors.branchName ||
-                  errors.clientCategory ||
-                  errors.country ||
-                  errors.email ||
-                  errors.phoneNumber ||
-                  errors.displayName ||
-                  errors.street ||
-                  errors.externalNum ||
-                  errors.internalNum
+                {
+                  errors.branchName ||
+                    errors.clientCategory ||
+                    errors.country ||
+                    errors.email ||
+                    errors.phoneNumber ||
+                    errors.displayName ||
+                    errors.street ||
+                    errors.externalNum ||
+                    errors.internalNum
                   // errors.neighborhood ||
                   // errors.city ||
                   // errors.estate ||
                   // errors.zipCode
-                  }
+                }
               </Alert>
             )}
 
@@ -426,7 +433,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
             <TextField
               fullWidth
               label="Nombre del Cliente"
-              {...getFieldProps('branchName')}
+              {...getFieldProps("branchName")}
               error={Boolean(touched.branchName && errors.branchName)}
               helperText={touched.branchName && errors.branchName}
             />
@@ -434,7 +441,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
             <TextField
               fullWidth
               label="Nombre del Contacto del Cliente"
-              {...getFieldProps('displayName')}
+              {...getFieldProps("displayName")}
               error={Boolean(touched.displayName && errors.displayName)}
               helperText={touched.displayName && errors.displayName}
             />
@@ -443,7 +450,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
               fullWidth
               type="email"
               label="Correo Electrónico"
-              {...getFieldProps('email')}
+              {...getFieldProps("email")}
               error={Boolean(touched.email && errors.email)}
               helperText={touched.email && errors.email}
             />
@@ -451,11 +458,11 @@ const ClientForm: React.FC<ClientFormProps> = ({
             <TextField
               fullWidth
               label="Teléfono"
-              {...getFieldProps('phoneNumber')}
+              {...getFieldProps("phoneNumber")}
               error={Boolean(touched.phoneNumber && errors.phoneNumber)}
               helperText={touched.phoneNumber && errors.phoneNumber}
               InputProps={{
-                startAdornment: <Typography>+52&nbsp;</Typography>
+                startAdornment: <Typography>+52&nbsp;</Typography>,
               }}
             />
 
@@ -464,7 +471,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
                 <TextField
                   fullWidth
                   label="Calle"
-                  {...getFieldProps('street')}
+                  {...getFieldProps("street")}
                   error={Boolean(touched.street && errors.street)}
                   helperText={touched.street && errors.street}
                 />
@@ -473,7 +480,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
                 <TextField
                   fullWidth
                   label="Núm. Ext."
-                  {...getFieldProps('externalNum')}
+                  {...getFieldProps("externalNum")}
                   error={Boolean(touched.externalNum && errors.externalNum)}
                   helperText={touched.externalNum && errors.externalNum}
                 />
@@ -485,7 +492,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
                 <TextField
                   fullWidth
                   label="Núm. Int."
-                  {...getFieldProps('internalNum')}
+                  {...getFieldProps("internalNum")}
                   error={Boolean(touched.internalNum && errors.internalNum)}
                   helperText={touched.internalNum && errors.internalNum}
                 />
@@ -499,12 +506,12 @@ const ClientForm: React.FC<ClientFormProps> = ({
                   defaultValue={
                     editMode
                       ? zipCodes.find((z) => z.value === clientState.zipCode) ||
-                      undefined
+                        undefined
                       : undefined
                   }
                   fieldProps={{
                     error: Boolean(touched.zipCode && errors.zipCode),
-                    helperText: touched.zipCode && errors.zipCode
+                    helperText: touched.zipCode && errors.zipCode,
                   }}
                   initialSize={20}
                 />
@@ -514,7 +521,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
             <TextField
               fullWidth
               label="Colonia"
-              {...getFieldProps('neighborhood')}
+              {...getFieldProps("neighborhood")}
               error={Boolean(touched.neighborhood && errors.neighborhood)}
               helperText={touched.neighborhood && errors.neighborhood}
             />
@@ -522,7 +529,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
             <TextField
               fullWidth
               label="Municipio o Alcaldía"
-              {...getFieldProps('city')}
+              {...getFieldProps("city")}
               error={Boolean(touched.city && errors.city)}
               helperText={touched.city && errors.city}
             />
@@ -533,7 +540,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
                   fullWidth
                   select
                   label="Estado"
-                  {...getFieldProps('estate')}
+                  {...getFieldProps("estate")}
                   error={Boolean(touched.estate && errors.estate)}
                   helperText={touched.estate && errors.estate}
                 >
@@ -549,7 +556,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
                   fullWidth
                   disabled
                   label="País"
-                  {...getFieldProps('country')}
+                  {...getFieldProps("country")}
                   error={Boolean(touched.country && errors.country)}
                   helperText={touched.country && errors.country}
                 />
@@ -565,13 +572,8 @@ const ClientForm: React.FC<ClientFormProps> = ({
                 Etiquetas (Opcional)
               </Typography>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ pb: 1 }}
-              >
-                Las etiquetas son palabras clave para identificar tus
-                clientes.
+              <Typography variant="body2" color="text.secondary" sx={{ pb: 1 }}>
+                Las etiquetas son palabras clave para identificar tus clientes.
               </Typography>
 
               <MultiKeyValueInput
@@ -584,7 +586,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
             {/* Client Tax Info */}
             <Typography
               variant="subtitle1"
-              color={'text.secondary'}
+              color={"text.secondary"}
               sx={{ mt: theme.spacing(3) }}
             >
               Datos Fiscales
@@ -607,7 +609,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
               variant="contained"
               loading={isSubmitting}
             >
-              {editMode ? 'Editar Cliente' : 'Agregar Cliente'}
+              {editMode ? "Editar Cliente" : "Agregar Cliente"}
             </LoadingButton>
           </Stack>
         </Form>

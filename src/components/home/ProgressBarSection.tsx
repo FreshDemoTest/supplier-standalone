@@ -22,7 +22,7 @@ import AutoModeIcon from "@mui/icons-material/AutoMode";
 // routes
 import { PATH_APP } from "../../routes/paths";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 
 // --------------------
 const totalRegistrationSteps = 5;
@@ -83,7 +83,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
           defaultExpanded
           sx={{ my: theme.spacing(2), py: theme.spacing(2) }}
           onChange={(event: any, expanded: boolean) => {
-            mixtrack("expand_progress", {
+            track("select_content", {
               expanded: expanded,
               visit: window.location.toString(),
               page: "Home",
@@ -139,7 +139,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
                     component={RouterLink}
                     to={PATH_APP.account.unit.add}
                     onClick={() => {
-                      mixtrack("add_unit_click", {
+                      track("add_shipping_info", {
                         visit: window.location.toString(),
                         page: "Home",
                         section: "ProgressBarSection",
@@ -159,7 +159,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
                     component={RouterLink}
                     to={PATH_APP.account.legal}
                     onClick={() => {
-                      mixtrack("add_legal_click", {
+                      track("add_payment_info", {
                         visit: window.location.toString(),
                         page: "Home",
                         section: "ProgressBarSection",
@@ -180,7 +180,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
                     component={RouterLink}
                     to={PATH_APP.alimaAccount}
                     onClick={() => {
-                      mixtrack("add_paymethod_click", {
+                      track("add_payment_info", {
                         visit: window.location.toString(),
                         page: "Home",
                         section: "ProgressBarSection",
@@ -202,7 +202,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
                       component={RouterLink}
                       to={PATH_APP.catalog.product.add}
                       onClick={() => {
-                        mixtrack("add_product_click", {
+                        track("add_to_cart", {
                           visit: window.location.toString(),
                           page: "Home",
                           section: "ProgressBarSection",
@@ -216,7 +216,7 @@ const ProgressBarSection: React.FC<ProgressBarSectionProps> = ({
                       component={RouterLink}
                       to={PATH_APP.catalog.product.upload}
                       onClick={() => {
-                        mixtrack("add_supplier_file_click", {
+                        track("add_shipping_info", {
                           visit: window.location.toString(),
                           page: "Home",
                           section: "ProgressBarSection",

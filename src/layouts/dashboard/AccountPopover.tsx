@@ -40,7 +40,7 @@ import MyAvatar from "../../components/MyAvatar";
 import MenuPopover from "../../components/MenuPopover";
 import { pwaRelease } from "../../config";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import {
   isAllowedTo,
   verifyAvailableMobileSections,
@@ -139,7 +139,7 @@ export default function AccountPopover() {
 
   // on mounted
   useEffect(() => {
-    mixtrack("account_popover", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "",
       section: "TopBar",
@@ -182,7 +182,7 @@ export default function AccountPopover() {
         navigate(linkTo);
       }
       handleClose();
-      mixtrack("account_menu_item", {
+      track("select_content", {
         item: linkTo,
         visit: window.location.toString(),
         page: "",
@@ -197,7 +197,7 @@ export default function AccountPopover() {
       resetRootReducer(dispatch);
       navigate("/");
       handleReloadVersion();
-      mixtrack("logout", {
+      track("login", {
         visit: window.location.toString(),
         page: "",
         section: "TopBar",
@@ -242,17 +242,16 @@ export default function AccountPopover() {
       >
         <MyAvatar />
       </IconButton>
-      <Box
-        >
+      <Box>
         <MenuPopover
           open={open}
           onClose={handleClose}
           anchorEl={anchorRef.current || undefined}
           sx={{
             width: 220,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-        }}
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
         >
           <Box sx={{ my: 1.5, px: 2.5 }}>
             <Typography variant="subtitle1" noWrap>
@@ -354,7 +353,11 @@ export default function AccountPopover() {
 
           <Divider sx={{ mt: 0.5 }} />
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="caption" align="center" color={"text.secondary"}>
+            <Typography
+              variant="caption"
+              align="center"
+              color={"text.secondary"}
+            >
               {`© alima - ${pwaRelease} `} &nbsp;
               <IconButton
                 sx={{ p: 0, fontSize: "inherit" }}

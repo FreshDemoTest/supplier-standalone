@@ -10,7 +10,7 @@ import { PATH_APP } from "../../../routes/paths";
 import Page from "../../../components/Page";
 import ListInvoicesView from "./ListInvoices";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 import { useSearchParams } from "react-router-dom";
 import MHidden from "../../../components/extensions/MHidden";
@@ -89,7 +89,7 @@ const ListInvoicesPage: React.FC<ListInvoicesPageProps> = ({
           buttonMsg="Agregar Factura"
           onClick={() => {
             navigate(PATH_APP.invoice.add);
-            mixtrack("add_payment_open", {
+            track("select_content", {
               visit: window.location.toString(),
               page: "ListInvoices",
               section: "FixedAddButton",
@@ -128,7 +128,7 @@ const ListInvoices: React.FC<ListInvoicesViewProps> = () => {
   useEffect(() => {
     if (permissionsLoaded && !allowFacturasList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("facturas_to_not_allowed_redirect", {
+      track("screen_view", {
         visit: window.location.toString(),
         page: "ListInvoices",
         section: "",

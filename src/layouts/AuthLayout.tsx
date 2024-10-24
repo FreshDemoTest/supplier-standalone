@@ -1,30 +1,30 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from "react-router-dom";
 // material
-import { styled } from '@mui/material/styles';
-import { Typography } from '@mui/material';
+import { styled } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 // components
-import Logo from '../components/Logo';
-import MHidden from '../components/extensions/MHidden';
-import { PATH_APP } from '../routes/paths';
-import { mixtrack } from '../utils/analytics';
+import Logo from "../components/Logo";
+import MHidden from "../components/extensions/MHidden";
+import { PATH_APP } from "../routes/paths";
+import track from "../utils/analytics";
 //
 
 // ----------------------------------------------------------------------
 
-const HeaderStyle = styled('header')(({ theme }) => ({
+const HeaderStyle = styled("header")(({ theme }) => ({
   top: 0,
   zIndex: 9,
   lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  position: "absolute",
   padding: theme.spacing(3),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7)
-  }
+  justifyContent: "space-between",
+  [theme.breakpoints.up("md")]: {
+    alignItems: "flex-start",
+    padding: theme.spacing(7, 5, 0, 7),
+  },
 }));
 
 // ----------------------------------------------------------------------
@@ -35,18 +35,18 @@ type AuthLayoutProps = {
 };
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({
-  pageName = 'Auth',
-  children
+  pageName = "Auth",
+  children,
 }) => {
   return (
     <HeaderStyle>
       <RouterLink
         to={PATH_APP.root}
         onClick={() =>
-          mixtrack('alima_logo', {
+          track("view_item", {
             visit: window.location.toString(),
             page: pageName,
-            section: 'AuthLayout'
+            section: "AuthLayout",
           })
         }
       >
@@ -57,7 +57,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         <Typography
           variant="body2"
           sx={{
-            mt: { md: -2 }
+            mt: { md: -2 },
           }}
         >
           {children}

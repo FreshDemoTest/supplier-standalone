@@ -1,54 +1,54 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from "react-router-dom";
 // material
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   Box,
   Card,
   Link,
   Container,
   Typography,
-  IconButton
-} from '@mui/material';
-import Cached from '@mui/icons-material/Cached';
+  IconButton,
+} from "@mui/material";
+import Cached from "@mui/icons-material/Cached";
 // hooks
 // routes
-import { PATHS_EXTERNAL, PATH_AUTH } from '../../routes/paths';
+import { PATHS_EXTERNAL, PATH_AUTH } from "../../routes/paths";
 // layouts
-import AuthLayout from '../../layouts/AuthLayout';
+import AuthLayout from "../../layouts/AuthLayout";
 // components
-import Page from '../../components/Page';
-import MHidden from '../../components/extensions/MHidden';
-import RegisterForm from '../../components/auth/RegisterForm';
-import { pwaRelease } from '../../config';
-import { mixtrack } from '../../utils/analytics';
+import Page from "../../components/Page";
+import MHidden from "../../components/extensions/MHidden";
+import RegisterForm from "../../components/auth/RegisterForm";
+import { pwaRelease } from "../../config";
+import track from "../../utils/analytics";
 
 // import AuthFirebaseSocials from '../../components/authentication/AuthFirebaseSocial';
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+  },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   maxWidth: 464,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  margin: theme.spacing(2, 0, 2, 2),
 }));
 
-const ContentStyle = styled('div')(({ theme }) => ({
+const ContentStyle = styled("div")(({ theme }) => ({
   maxWidth: 480,
-  margin: 'auto',
-  display: 'flex',
-  minHeight: '100vh',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: theme.spacing(12, 0)
+  margin: "auto",
+  display: "flex",
+  minHeight: "100vh",
+  flexDirection: "column",
+  justifyContent: "center",
+  padding: theme.spacing(12, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -63,15 +63,15 @@ export default function Register() {
   };
 
   const handleLoginRedirect = () => {
-    mixtrack('login_redirect', {
+    track("screen_view", {
       visit: window.location.toString(),
-      page: 'Register',
-      section: ''
+      page: "Register",
+      section: "",
     });
   };
   return (
     <RootStyle title="Registro | Alima">
-      <AuthLayout pageName='Register'>
+      <AuthLayout pageName="Register">
         ¿Ya tienes una cuenta? &nbsp;
         <Link
           underline="none"
@@ -94,8 +94,8 @@ export default function Register() {
             color="text.secondary"
             sx={{ pl: 5, pr: 7, mt: 4, mb: 5 }}
           >
-            Administra todos tus pedidos, gestiona tus productos, listas de preicos,
-            automatiza tus facturas y consigue nuevos clientes.
+            Administra todos tus pedidos, gestiona tus productos, listas de
+            preicos, automatiza tus facturas y consigue nuevos clientes.
             <br />
             Para que tú solo te preocupes por seguir creciendo.
           </Typography>
@@ -104,22 +104,22 @@ export default function Register() {
               className="lazyload blur-up"
               alt="register"
               src="/static/assets/illustrations/kitchen_team.jpg"
-              style={{ borderRadius: '16px' }}
+              style={{ borderRadius: "16px" }}
             />
           </Box>
           {/* Version */}
           <Box
-            position={'fixed'}
-            sx={{ bottom: 20, display: 'flex', left: '10%' }}
+            position={"fixed"}
+            sx={{ bottom: 20, display: "flex", left: "10%" }}
           >
             <Typography
               variant="caption"
               align="center"
-              color={'text.secondary'}
+              color={"text.secondary"}
             >
               {`© alima - ${pwaRelease} `} &nbsp;
               <IconButton
-                sx={{ p: 0, fontSize: 'inherit' }}
+                sx={{ p: 0, fontSize: "inherit" }}
                 onClick={handleHotReload}
               >
                 <Cached color="disabled" />
@@ -131,13 +131,13 @@ export default function Register() {
 
       <Container>
         <ContentStyle>
-          <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ mb: 5, display: "flex", alignItems: "center" }}>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h4" gutterBottom>
                 ¡Empieza ahora con Alima Seller!
               </Typography>
-              <Typography sx={{ color: 'text.secondary' }}>
-                {' '}
+              <Typography sx={{ color: "text.secondary" }}>
+                {" "}
                 Inicia tu cuenta gratis.
               </Typography>
             </Box>
@@ -154,7 +154,7 @@ export default function Register() {
           <Typography
             variant="body2"
             align="center"
-            sx={{ color: 'text.secondary', mt: 3 }}
+            sx={{ color: "text.secondary", mt: 3 }}
           >
             Al registrarte, tú y el negocio que representas están de acuerdo con
             la&nbsp;
@@ -162,14 +162,14 @@ export default function Register() {
               underline="always"
               color="text.primary"
               onClick={() => {
-                mixtrack('privacy_policy', {
+                track("view_item", {
                   visit: window.location.toString(),
-                  page: 'Register',
-                  section: ''
+                  page: "Register",
+                  section: "",
                 });
-                window.open(PATHS_EXTERNAL.privacyPolicy, '_blank');
+                window.open(PATHS_EXTERNAL.privacyPolicy, "_blank");
               }}
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: "pointer" }}
             >
               Aviso de Privacidad
             </Link>
@@ -178,14 +178,14 @@ export default function Register() {
               underline="always"
               color="text.primary"
               onClick={() => {
-                mixtrack('terms_and_conditions', {
+                track("select_content", {
                   visit: window.location.toString(),
-                  page: 'Register',
-                  section: ''
+                  page: "Register",
+                  section: "",
                 });
-                window.open(PATHS_EXTERNAL.termsAndConditions, '_blank');
+                window.open(PATHS_EXTERNAL.termsAndConditions, "_blank");
               }}
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: "pointer" }}
             >
               Términos y Condiciones
             </Link>
@@ -211,22 +211,22 @@ export default function Register() {
             {/* Powered by Alima */}
             <MHidden width="mdUp">
               <Box
-                position={'fixed'}
+                position={"fixed"}
                 sx={{
                   bottom: 4,
-                  width: '100%',
-                  textAlign: 'center'
+                  width: "100%",
+                  textAlign: "center",
                 }}
               >
                 <Typography
                   variant="caption"
                   align="center"
-                  color={'text.secondary'}
+                  color={"text.secondary"}
                   sx={{ ml: -4 }}
                 >
                   {`© alima - ${pwaRelease} `} &nbsp;
                   <IconButton
-                    sx={{ p: 0, fontSize: 'inherit' }}
+                    sx={{ p: 0, fontSize: "inherit" }}
                     onClick={handleHotReload}
                   >
                     <Cached color="disabled" />

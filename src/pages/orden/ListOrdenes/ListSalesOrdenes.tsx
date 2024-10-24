@@ -47,7 +47,7 @@ import {
 import { getActiveClients } from "../../../redux/slices/client";
 // utils
 import { createBlobURI, fISODate, normalizeText } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { PATH_APP } from "../../../routes/paths";
 
 // ----------------------------------------------------------------------
@@ -202,7 +202,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
   // date range
   const handleDateFilters = (filts: any) => {
     dispatch(setActiveOrdenesDateRange(filts));
-    mixtrack("filter_dates_active_ordenes", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Ordenes",
       section: "SearchBar",
@@ -213,7 +213,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
   // search
   const handleSearch = (value: string) => {
     dispatch(setActiveOrdenesSearch(value));
-    mixtrack("search_active_ordenes", {
+    track("search", {
       visit: window.location.toString(),
       page: "Ordenes",
       section: "SearchBar",
@@ -230,7 +230,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
         dateRange: dateRange,
       })
     );
-    mixtrack("filter_active_ordenes", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Ordenes",
       section: "SearchBar",
@@ -270,7 +270,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_historic_ordenes_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Ordenes",
         section: "SearchBar",
@@ -281,7 +281,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_historic_ordenes_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Ordenes",
         section: "SearchBar",
@@ -478,7 +478,7 @@ const ListSalesOrdenesView: React.FC<{}> = () => {
                 }
                 onClick={() => {
                   navigate(PATH_APP.orden.add);
-                  mixtrack("add_orden_click", {
+                  track("select_content", {
                     visit: window.location.toString(),
                     section: "SearchBar",
                     page: "ListActiveOrdenes",

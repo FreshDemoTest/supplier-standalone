@@ -36,7 +36,7 @@ import {
   InvoicingTriggers,
 } from "../../domain/account/SUnit";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { createBlobURI } from "../../utils/helpers";
 import { Icon } from "@iconify/react";
 
@@ -107,7 +107,7 @@ const InvoiceSUnitForm: React.FC<InvoiceSUnitFormProps> = ({
     <Accordion
       sx={{ mb: theme.spacing(2), py: theme.spacing(1) }}
       onChange={(e: any, expanded: boolean) => {
-        mixtrack("invoice_sunit_click", {
+        track("select_item", {
           visit: window.location.toString(),
           page: "SUnit",
           section: "InvoiceSUnitForm",

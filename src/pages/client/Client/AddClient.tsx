@@ -14,7 +14,7 @@ import BasicDialog from "../../../components/navigation/BasicDialog";
 import ClientForm from "../../../components/client/ClientForm";
 // utils
 import { delay } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { getUnit } from "../../../redux/slices/account";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import useAuth from "../../../hooks/useAuth";
@@ -132,7 +132,7 @@ const AddSupplier = () => {
     await delay(500);
     setOpenConfirmDiag(false);
     navigate(PATH_APP.client.list);
-    mixtrack("add_client", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "AddClient",
       section: "ClientConfirmationModal",

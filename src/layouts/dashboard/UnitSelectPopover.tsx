@@ -23,7 +23,7 @@ import createAvatar from "../../utils/createAvatar";
 // domain
 import { UnitType } from "../../domain/account/SUnit";
 // utils
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 
 // ----------------------------------------------------------------------
 type ListUnitOptionsProps = {
@@ -88,7 +88,7 @@ export default function UnitSelectPopover({ units }: UnitSelectPopoverProps) {
   const handleClose = (unit: any | undefined) => {
     if (unit) {
       dispatch(setActiveUnitSuccess(unit));
-      mixtrack("unit_select", {
+      track("select_content", {
         unitId: unit?.id || "",
         unitName: unit?.unitName || "",
         visit: window.location.toString(),

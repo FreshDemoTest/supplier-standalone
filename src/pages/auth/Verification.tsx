@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import React, { useEffect, useRef, useState } from "react";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 // material
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme } from "@mui/material/styles";
 import {
   Box,
   Card,
@@ -17,55 +17,55 @@ import {
   capitalize,
   Grid,
   TextField,
-  Link
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { Icon } from '@iconify/react';
-import closeFill from '@iconify/icons-eva/close-fill';
-import questionMarkFill from '@iconify/icons-eva/question-mark-circle-outline';
-import { closeSnackbar, enqueueSnackbar } from 'notistack';
+  Link,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Icon } from "@iconify/react";
+import closeFill from "@iconify/icons-eva/close-fill";
+import questionMarkFill from "@iconify/icons-eva/question-mark-circle-outline";
+import { closeSnackbar, enqueueSnackbar } from "notistack";
 // hooks
-import useAuth from '../../hooks/useAuth';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import useAuth from "../../hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 // redux
-import { getUser } from '../../redux/slices/registration';
+import { getUser } from "../../redux/slices/registration";
 // layouts
-import AuthLayout from '../../layouts/AuthLayout';
+import AuthLayout from "../../layouts/AuthLayout";
 // components
-import Page from '../../components/Page';
-import MHidden from '../../components/extensions/MHidden';
-import FixedAddButton from '../../components/footers/FixedAddButton';
+import Page from "../../components/Page";
+import MHidden from "../../components/extensions/MHidden";
+import FixedAddButton from "../../components/footers/FixedAddButton";
 // utils
-import { delay } from '../../utils/helpers';
-import { mixtrack } from '../../utils/analytics';
+import { delay } from "../../utils/helpers";
+import track from "../../utils/analytics";
 // routes
-import { PATHS_EXTERNAL } from '../../routes/paths';
+import { PATHS_EXTERNAL } from "../../routes/paths";
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+  },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   maxWidth: 464,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  margin: theme.spacing(2, 0, 2, 2),
 }));
 
-const ContentStyle = styled('div')(({ theme }) => ({
+const ContentStyle = styled("div")(({ theme }) => ({
   maxWidth: 480,
-  margin: 'auto',
-  display: 'flex',
-  minHeight: '100vh',
-  flexDirection: 'column',
-  justifyContent: 'left',
-  padding: theme.spacing(12, 0)
+  margin: "auto",
+  display: "flex",
+  minHeight: "100vh",
+  flexDirection: "column",
+  justifyContent: "left",
+  padding: theme.spacing(12, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -77,7 +77,7 @@ export default function Verification() {
     verifyPhoneNumberCode,
     sendEmailValidation,
     verification,
-    logout
+    logout,
   } = useAuth();
   const theme = useTheme();
   const fetchedUser = useRef(false);
@@ -85,11 +85,11 @@ export default function Verification() {
   const { user } = useAppSelector((state) => state.registration);
   const dispatch = useAppDispatch();
   // states
-  const [validationMethod, setValidationMethod] = useState('');
+  const [validationMethod, setValidationMethod] = useState("");
   const [valMethodFixed, setValMethodFixed] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [isCodeSent, setCodeSent] = useState(false);
-  const [valCode, setValCode] = useState<string>('');
+  const [valCode, setValCode] = useState<string>("");
   const [isConfirming, setConfirming] = useState(false);
   const [revCounter, setRevCounter] = useState(0);
 
@@ -109,8 +109,8 @@ export default function Verification() {
         enqueueSnackbar(
           `Error: tu usuario Alima Seller no está registrado. Por favor contacta a soporte.`,
           {
-            variant: 'error',
-            autoHideDuration: 4000
+            variant: "error",
+            autoHideDuration: 4000,
           }
         );
         await logout();
@@ -124,24 +124,24 @@ export default function Verification() {
 
   const handleChange = (event: SelectChangeEvent) => {
     setValidationMethod(event.target.value as string);
-    mixtrack('verification_method', {
+    track("select_content", {
       method: event.target.value as string,
       visit: window.location.toString(),
-      page: 'Verification',
-      section: ''
+      page: "Verification",
+      section: "",
     });
   };
 
   const handleValCodeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let tmpstr = event.target.value.replaceAll('-', '');
-    let dipstr = '';
+    let tmpstr = event.target.value.replaceAll("-", "");
+    let dipstr = "";
     for (let j = 0; j < tmpstr.length; j += 1) {
       let dig = tmpstr[j];
       if (!dig.match(/\d+/)) {
         continue;
       }
       if (j === 3) {
-        dipstr += '-';
+        dipstr += "-";
       }
       if (j < 6) {
         dipstr += tmpstr[j];
@@ -154,10 +154,10 @@ export default function Verification() {
     setSubmitting(true);
     setValMethodFixed(true); // fix the val method
     setRevCounter(60); // resend message in 30 secs
-    if (validationMethod === 'sms') {
+    if (validationMethod === "sms") {
       await sendPhoneNumberValidation(
-        'recaptcha-container',
-        '+' + user.phoneNumber
+        "recaptcha-container",
+        "+" + user.phoneNumber
       );
       setCodeSent(true);
     } else {
@@ -167,108 +167,108 @@ export default function Verification() {
     }
     // send message
     enqueueSnackbar(`Enviando código por ${capitalize(validationMethod)}`, {
-      variant: 'info',
+      variant: "info",
       autoHideDuration: 1000,
       action: (key) => (
         <IconButton size="small" onClick={() => closeSnackbar(key)}>
           <Icon icon={closeFill} />
         </IconButton>
-      )
+      ),
     });
     setSubmitting(false);
-    mixtrack('verification_send', {
+    track("select_content", {
       method: validationMethod,
       visit: window.location.toString(),
-      page: 'Verification',
-      section: ''
+      page: "Verification",
+      section: "",
     });
   };
 
   const confirmCode = async () => {
     setConfirming(true);
-    verifyPhoneNumberCode(valCode.replaceAll('-', ''));
-    mixtrack('verification_confirm', {
+    verifyPhoneNumberCode(valCode.replaceAll("-", ""));
+    track("select_content", {
       method: validationMethod,
       visit: window.location.toString(),
-      page: 'Verification',
-      section: ''
+      page: "Verification",
+      section: "",
     });
   };
 
   const validationObj =
-    validationMethod === 'sms'
-      ? 'código'
-      : validationMethod === ''
-      ? ''
-      : 'link';
+    validationMethod === "sms"
+      ? "código"
+      : validationMethod === ""
+      ? ""
+      : "link";
 
   useEffect(() => {
     // Validation of errors
-    if (verification.error === 'sms_sending_phone_validation_issue') {
+    if (verification.error === "sms_sending_phone_validation_issue") {
       enqueueSnackbar(
         `Error enviando el código por SMS. Intenta con otro método de validación.`,
         {
-          variant: 'error',
+          variant: "error",
           autoHideDuration: 2000,
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         }
       );
       setConfirming(false);
-    } else if (verification.error === 'sms_verifying_phone_validation_issue') {
+    } else if (verification.error === "sms_verifying_phone_validation_issue") {
       enqueueSnackbar(
         `Error en tu código de validación. Por favor revísalo de nuevo.`,
         {
-          variant: 'error',
+          variant: "error",
           autoHideDuration: 2000,
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         }
       );
-      setValCode(''); // reset validation code to retry
+      setValCode(""); // reset validation code to retry
       setConfirming(false);
-    } else if (verification.error === 'email_verifying_validation_issue') {
+    } else if (verification.error === "email_verifying_validation_issue") {
       enqueueSnackbar(
         `Error enviando el código por Email. Intenta con otro método de validación .`,
         {
-          variant: 'error',
+          variant: "error",
           autoHideDuration: 2000,
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         }
       );
       setConfirming(false);
-    } else if (verification.isVerified && verification.method === 'sms') {
+    } else if (verification.isVerified && verification.method === "sms") {
       enqueueSnackbar(
         `Tu código de validación ha sido correctamente verificado.`,
         {
-          variant: 'success',
+          variant: "success",
           autoHideDuration: 2000,
           action: (key) => (
             <IconButton size="small" onClick={() => closeSnackbar(key)}>
               <Icon icon={closeFill} />
             </IconButton>
-          )
+          ),
         }
       );
-      setValCode(''); // reset validation code to retry
+      setValCode(""); // reset validation code to retry
       setConfirming(false);
     }
     if (verification) {
-      mixtrack('verification', {
+      track("select_content", {
         ...verification,
         visit: window.location.toString(),
-        page: 'Verification',
-        section: ''
+        page: "Verification",
+        section: "",
       });
     }
   }, [verification]);
@@ -302,7 +302,7 @@ export default function Verification() {
               alt="Verify"
               className="lazyload blur-up"
               src="/static/assets/illustrations/invoice_data.jpg"
-              style={{ borderRadius: '16px' }}
+              style={{ borderRadius: "16px" }}
             />
           </Box>
         </SectionStyle>
@@ -312,13 +312,13 @@ export default function Verification() {
         <ContentStyle>
           {/* Instructions */}
           <Box
-            sx={{ mt: theme.spacing(5), display: 'flex', alignItems: 'center' }}
+            sx={{ mt: theme.spacing(5), display: "flex", alignItems: "center" }}
           >
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h4" gutterBottom>
                 Escoge tu método de validación.
               </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body1" sx={{ color: "text.secondary" }}>
                 Selecciona Email o SMS para enviarte la información de
                 validación de tu usuario.
               </Typography>
@@ -339,8 +339,8 @@ export default function Verification() {
                 onChange={handleChange}
                 disabled={valMethodFixed}
               >
-                <MenuItem value={'sms'}>SMS</MenuItem>
-                <MenuItem value={'email'}>Correo Electrónico</MenuItem>
+                <MenuItem value={"sms"}>SMS</MenuItem>
+                <MenuItem value={"email"}>Correo Electrónico</MenuItem>
                 {/* <MenuItem value={'whatsapp'}>WhatsApp</MenuItem> */}
               </Select>
             </FormControl>
@@ -354,7 +354,7 @@ export default function Verification() {
             <Box>
               <LoadingButton
                 fullWidth
-                disabled={validationMethod === ''}
+                disabled={validationMethod === ""}
                 size="large"
                 variant="contained"
                 loading={isSubmitting}
@@ -362,20 +362,20 @@ export default function Verification() {
               >
                 Enviar {validationObj}
               </LoadingButton>
-              {validationMethod === 'sms' && (
+              {validationMethod === "sms" && (
                 <Typography
                   variant="body1"
-                  sx={{ color: 'text.secondary', mt: theme.spacing(1) }}
+                  sx={{ color: "text.secondary", mt: theme.spacing(1) }}
                 >
                   Recibirás tu código al número: <b>+{user.phoneNumber}</b>.
                 </Typography>
               )}
-              {validationMethod === 'email' && (
+              {validationMethod === "email" && (
                 <Typography
                   variant="body1"
-                  sx={{ color: 'text.secondary', mt: theme.spacing(1) }}
+                  sx={{ color: "text.secondary", mt: theme.spacing(1) }}
                 >
-                  Recibirás tu link de validación al correo electrónico:{' '}
+                  Recibirás tu link de validación al correo electrónico:{" "}
                   <b>{user.email}</b>.
                 </Typography>
               )}
@@ -384,12 +384,12 @@ export default function Verification() {
           {/* Code validation components */}
           {isCodeSent && (
             <Box>
-              {validationMethod === 'sms' && (
+              {validationMethod === "sms" && (
                 <Grid container>
                   <Grid item>
                     <Typography
                       variant="body1"
-                      sx={{ color: 'text.secondary' }}
+                      sx={{ color: "text.secondary" }}
                     >
                       Debiste recibir un código de 6 dígitos, cópialo aquí:
                     </Typography>
@@ -397,7 +397,7 @@ export default function Verification() {
                   <Grid
                     item
                     xs={12}
-                    textAlign={'center'}
+                    textAlign={"center"}
                     sx={{ mt: theme.spacing(2) }}
                   >
                     <TextField
@@ -407,22 +407,22 @@ export default function Verification() {
                       placeholder="000-000"
                       inputProps={{
                         style: {
-                          textAlign: 'center',
+                          textAlign: "center",
                           maxWidth: theme.spacing(12),
-                          fontSize: theme.typography.h4.fontSize
-                        }
+                          fontSize: theme.typography.h4.fontSize,
+                        },
                       }}
                     />
                   </Grid>
                 </Grid>
               )}
 
-              {validationMethod === 'email' && (
+              {validationMethod === "email" && (
                 <Grid container>
                   <Grid item>
                     <Typography
                       variant="body1"
-                      sx={{ color: 'text.secondary' }}
+                      sx={{ color: "text.secondary" }}
                     >
                       Debiste recibir un link de validación al correo
                       electrónico: <b>{user.email}</b>.
@@ -431,7 +431,7 @@ export default function Verification() {
                 </Grid>
               )}
 
-              <Grid container direction={'row'} sx={{ mt: theme.spacing(2) }}>
+              <Grid container direction={"row"} sx={{ mt: theme.spacing(2) }}>
                 <Grid item xs={6} lg={6} sx={{ px: theme.spacing(1) }}>
                   <LoadingButton
                     fullWidth
@@ -442,18 +442,18 @@ export default function Verification() {
                     onClick={() => {
                       setCodeSent(false);
                       setValMethodFixed(false);
-                      mixtrack('verification_back', {
+                      track("select_content", {
                         method: validationMethod,
                         visit: window.location.toString(),
-                        page: 'Verification',
-                        section: ''
+                        page: "Verification",
+                        section: "",
                       });
                     }}
                   >
                     Regresar
                   </LoadingButton>
                 </Grid>
-                {validationMethod === 'sms' && (
+                {validationMethod === "sms" && (
                   <Grid item xs={6} lg={6} sx={{ px: theme.spacing(1) }}>
                     <LoadingButton
                       fullWidth
@@ -473,7 +473,7 @@ export default function Verification() {
                 <Grid item xs={12} lg={12}>
                   <Typography
                     variant="body2"
-                    sx={{ color: 'text.secondary', cursor: 'pointer' }}
+                    sx={{ color: "text.secondary", cursor: "pointer" }}
                   >
                     ¿No recibiste tu {validationObj}?&nbsp;
                     {revCounter === 0 && (
@@ -499,18 +499,18 @@ export default function Verification() {
       {/* Help button */}
       <FixedAddButton
         onClick={() => {
-          mixtrack('verification_help', {
+          track("select_content", {
             visit: window.location.toString(),
-            page: 'Verification',
-            section: 'HelpBottomButton'
+            page: "Verification",
+            section: "HelpBottomButton",
           });
-          window.open(PATHS_EXTERNAL.supportAlimaWA, '_blank');
+          window.open(PATHS_EXTERNAL.supportAlimaWA, "_blank");
         }}
         buttonIcon={questionMarkFill}
         iconButtonSx={{
           backgroundColor: theme.palette.background.paper,
           color: theme.palette.text.secondary,
-          boxShadow: theme.shadows[2]
+          boxShadow: theme.shadows[2],
         }}
       />
     </RootStyle>

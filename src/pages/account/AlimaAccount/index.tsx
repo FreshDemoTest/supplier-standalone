@@ -31,7 +31,7 @@ import ChargesInfo from "./ChargesInfo";
 import PayMethodsInfo from "./PayMethodsInfo";
 // utils
 // import { isAllowedTo } from '../../../utils/permissions';
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 
 // ----------------------------------------------------------------------
@@ -114,7 +114,7 @@ export default function AlimaAccount() {
   useEffect(() => {
     if (permissionsLoaded && !allowAlimaPlan) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("alima_account_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "AlimaAccount",
         section: activeTab,
@@ -125,7 +125,7 @@ export default function AlimaAccount() {
 
   const handleChange = (event: any, newValue: AlimaPlanTabType) => {
     changeTab(newValue);
-    mixtrack("alima_account_tab_click", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "BusinessAccount",
       section: "NavTabs",

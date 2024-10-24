@@ -12,7 +12,7 @@ import {
   DataCardStyleSm,
 } from "../../styles/cards/dataCards";
 // utils & routes
-import { mixtrack } from "../../utils/analytics";
+import track from "../../utils/analytics";
 import { PATHS_EXTERNAL } from "../../routes/paths";
 
 // ----------------------------------------------------------------------
@@ -156,7 +156,7 @@ const DataInsightsSection: React.FC<DataInsightsSectionProps> = ({
                     color="primary"
                     sx={{ mt: 2 }}
                     onClick={() => {
-                      mixtrack("whatsapp_automation_cta", {
+                      track("select_content", {
                         visit: window.location.toString(),
                         page: "Home",
                         section: "DataInsights",

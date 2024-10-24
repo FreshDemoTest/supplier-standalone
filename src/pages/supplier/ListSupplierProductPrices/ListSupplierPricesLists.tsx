@@ -23,7 +23,7 @@ import LoadingProgress from "../../../components/LoadingProgress";
 import SupplierPriceListCardItem from "../../../components/supplier/SupplierPriceListCardItem";
 import MHidden from "../../../components/extensions/MHidden";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 // domain
 import { SupplierPriceListType } from "../../../domain/supplier/SupplierPriceList";
 import { PATH_APP } from "../../../routes/paths";
@@ -97,7 +97,7 @@ const ListSupplierPricesListsView: React.FC<{}> = () => {
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_listas _de_precios_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Prices",
         section: "SearchBar",
@@ -108,7 +108,7 @@ const ListSupplierPricesListsView: React.FC<{}> = () => {
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_listas_de_precios_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Prices",
         section: "SearchBar",
@@ -137,7 +137,7 @@ const ListSupplierPricesListsView: React.FC<{}> = () => {
   // search
   const handleSearch = (value: string) => {
     setSearch(value);
-    mixtrack("search_supplier_prices_list", {
+    track("view_search_results", {
       visit: window.location.toString(),
       page: "ListSupplierPricesLists",
       section: "SearchBar",
@@ -230,7 +230,7 @@ const ListSupplierPricesListsView: React.FC<{}> = () => {
             <SupplierPriceListCardItem
               priceList={pl}
               onClick={() => {
-                mixtrack("click_supplier_price_list", {
+                track("select_item", {
                   visit: window.location.toString(),
                   page: "ListSupplierPricesLists",
                   section: "PriceListCardItem",

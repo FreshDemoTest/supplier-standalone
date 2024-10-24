@@ -23,7 +23,7 @@ import Page from "../components/Page";
 import HomeView from "../components/home";
 import LoadingProgress from "../components/LoadingProgress";
 // utils
-import { mixtrack } from "../utils/analytics";
+import track from "../utils/analytics";
 
 // ----------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ export default function Home() {
     ) {
       // go to onboarding
       navigate(PATH_APP.account.onboarding);
-      mixtrack("onboarding_redirect", {
+      track("screen_view", {
         visit: window.location.toString(),
         page: "Home",
         section: "",

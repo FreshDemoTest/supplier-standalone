@@ -17,7 +17,7 @@ import LegalInfo from "./LegalInfo";
 import UnitsSection from "../../../components/home/UnitsSection";
 // utils
 import { getUnitsAllowed, isAllowedTo } from "../../../utils/permissions";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { UnitStateType } from "../../../domain/account/SUnit";
 import usePermissions from "../../../hooks/usePermissions";
 import FixedAddButton from "../../../components/footers/FixedAddButton";
@@ -106,7 +106,7 @@ export default function BusinessAccount() {
   useEffect(() => {
     if (permissionsLoaded && !allowEditAccount) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("editaccount_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "BusinessAccount",
         section: "",
@@ -117,7 +117,7 @@ export default function BusinessAccount() {
 
   const handleChange = (event: any, newValue: BusinessTabType) => {
     changeTab(newValue);
-    mixtrack("business_account_tab_click", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "BusinessAccount",
       section: "NavTabs",
@@ -182,7 +182,7 @@ export default function BusinessAccount() {
                       <FixedAddButton
                         onClick={() => {
                           navigate(PATH_APP.account.unit.add);
-                          mixtrack("add_unit_click", {
+                          track("select_content", {
                             visit: window.location.toString(),
                             page: "BusinessAccount",
                             section: "FixedAddUnit",

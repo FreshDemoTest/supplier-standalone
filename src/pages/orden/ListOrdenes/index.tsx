@@ -10,7 +10,7 @@ import { PATH_APP } from "../../../routes/paths";
 import Page from "../../../components/Page";
 import ListSalesOrdenesView from "./ListSalesOrdenes";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { isAllowedTo } from "../../../utils/permissions";
 import MHidden from "../../../components/extensions/MHidden";
 import FixedAddButton from "../../../components/footers/FixedAddButton";
@@ -85,7 +85,7 @@ const ListOrdenesPage: React.FC<ListOrdenesPageProps> = ({
           buttonMsg="Agregar Pedido"
           onClick={() => {
             navigate(PATH_APP.orden.add);
-            mixtrack("add_orden_open", {
+            track("select_content", {
               visit: window.location.toString(),
               page: "ListOrdenes",
               section: "FixedAddButton",
@@ -125,7 +125,7 @@ const ListOrdenes: React.FC<ListOrdenesViewProps> = ({ viewMode }) => {
   useEffect(() => {
     if (permissionsLoaded && !allowOrdenesList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("ordenes_to_not_allowed_redirect", {
+      track("screen_view", {
         visit: window.location.toString(),
         page: "ListOrdenes",
         section: "",

@@ -45,7 +45,7 @@ import {
 import { getActiveClients } from "../../../redux/slices/client";
 // utils
 import { createBlobURI, fISODate } from "../../../utils/helpers";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { PATH_APP } from "../../../routes/paths";
 
 // ----------------------------------------------------------------------
@@ -120,7 +120,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
   const dispatch = useAppDispatch();
   const activeUnits = units.filter((u: any) => !u.deleted);
   const [searchString, setSearchString] = useState(search);
-  // [TODO] - We need to figure out how to keep track of the ongoing requests, 
+  // [TODO] - We need to figure out how to keep track of the ongoing requests,
   // to cancel one in case another one of the same endpoint is called (ie.e getFacturasByRange)
 
   // fetch historic
@@ -202,7 +202,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
   // date range
   const handleDateFilters = (filts: any) => {
     dispatch(setActiveFacturasDateRange(filts));
-    mixtrack("filter_dates_active_facturas", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Facturas",
       section: "SearchBar",
@@ -218,7 +218,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
     navigate({
       search: searchParams.toString(),
     });
-    mixtrack("search_active_facturas", {
+    track("search", {
       visit: window.location.toString(),
       page: "Facturas",
       section: "SearchBar",
@@ -253,7 +253,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
         dateRange: dateRange,
       })
     );
-    mixtrack("filter_active_facturas", {
+    track("select_content", {
       visit: window.location.toString(),
       page: "Facturas",
       section: "SearchBar",
@@ -294,7 +294,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
         variant: "success",
         autoHideDuration: 2000,
       });
-      mixtrack(`download_historic_facturas_${xformat}`, {
+      track("view_item_list", {
         visit: window.location.toString(),
         page: "Facturas",
         section: "SearchBar",
@@ -305,7 +305,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
         variant: "error",
         autoHideDuration: 2000,
       });
-      mixtrack(`error_download_historic_facturas_${xformat}`, {
+      track("exception", {
         visit: window.location.toString(),
         page: "Facturas",
         section: "SearchBar",
@@ -444,7 +444,7 @@ const ListInvoicesView: React.FC<ListInvoicesViewProps> = ({
               }
               onClick={() => {
                 navigate(PATH_APP.invoice.add);
-                mixtrack("add_invoice_click", {
+                track("select_content", {
                   visit: window.location.toString(),
                   section: "SearchBar",
                   page: "AddInvoice",

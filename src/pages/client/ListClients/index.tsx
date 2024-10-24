@@ -10,7 +10,7 @@ import Page from "../../../components/Page";
 import ListActiveClientsView from "./ListActiveClients";
 // utils
 import { isAllowedTo } from "../../../utils/permissions";
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 // routes
 import { PATH_APP } from "../../../routes/paths";
 
@@ -71,7 +71,7 @@ const ListClients: React.FC<ListClientsViewProps> = ({ viewMode }) => {
   useEffect(() => {
     if (permissionsLoaded && !allowClientsList) {
       navigate(PATH_APP.notAllowed);
-      mixtrack("clients_to_not_allowed_redirect", {
+      track("exception", {
         visit: window.location.toString(),
         page: "ListClients",
         section: "",

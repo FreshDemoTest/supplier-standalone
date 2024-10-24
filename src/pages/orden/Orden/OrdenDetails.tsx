@@ -36,7 +36,7 @@ import { PATHS_EXTERNAL, PATH_APP } from "../../../routes/paths";
 // domain
 import { OrdenType } from "../../../domain/orden/Orden";
 // utils
-import { mixtrack } from "../../../utils/analytics";
+import track from "../../../utils/analytics";
 import { delay, fISODate } from "../../../utils/helpers";
 
 // ----------------------------------------------------------------------
@@ -122,7 +122,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
         ) && !invoiceDetails?.id,
       action: () => {
         navigate(PATH_APP.orden.edit.replace(":ordenId", ordenId));
-        mixtrack("edit_orden_click", {
+        track("checkout_progress", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
@@ -147,7 +147,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
             variant: "success",
             autoHideDuration: 2000,
           });
-          mixtrack("confirm_orden_click", {
+          track("checkout_progress", {
             visit: window.location.toString(),
             page: "OrdenDetails",
             section: "OrdenDetailsMenu",
@@ -182,7 +182,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
             variant: "success",
             autoHideDuration: 2000,
           });
-          mixtrack("delivered_orden_click", {
+          track("checkout_progress", {
             visit: window.location.toString(),
             page: "OrdenDetails",
             section: "OrdenDetailsMenu",
@@ -212,7 +212,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
       allowed: (ordenReceipt?.status || "submitted") !== "canceled", // [TODO] - permissions
       action: () => {
         setOpenDeleteBranchMenu(true);
-        mixtrack("cancel_orden_click", {
+        track("refund", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
@@ -233,7 +233,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
       action: () => {
         // handleGeneratePdf();
         setOpenPDF(true);
-        mixtrack("open_orden_pdf", {
+        track("share", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
@@ -251,19 +251,19 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
     {
       label: "Descargar PDF",
       allowed: true,
-      action:() => {
+      action: () => {
         // handleGeneratePdf();
         setDownloadPDF(true);
-        mixtrack("download_orden_pdf", {
+        track("share", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
         });
-        const setOff = async() => {
-          await delay(5000)
+        const setOff = async () => {
+          await delay(5000);
           setDownloadPDF(false);
-        }
-        setOff()
+        };
+        setOff();
       },
       icon: (
         <Icon
@@ -285,7 +285,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
           "El Link de la Orden ha sido copiado a tu portapapeles. Puedes compartirlo con quien necesites.",
           { variant: "success", autoHideDuration: 3000 }
         );
-        mixtrack("copy_ext_orden_details_link", {
+        track("share", {
           ordenId: ordenId,
           visit: window.location.toString(),
           page: "OrdenDetails",
@@ -336,7 +336,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
           );
         }
 
-        mixtrack("share_orden_pdf", {
+        track("share", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
@@ -389,7 +389,7 @@ const OrdenDetails: React.FC<OrdenDetailsProps> = ({ ordenId }) => {
             }
           );
         }
-        mixtrack("share_print_ticket", {
+        track("share", {
           visit: window.location.toString(),
           page: "OrdenDetails",
           section: "OrdenDetailsMenu",
