@@ -120,7 +120,7 @@ export default function Login() {
               align="center"
               color={"text.secondary"}
             >
-              {`© alima - ${pwaRelease} `} &nbsp;
+              {`${pwaRelease} `} &nbsp;
               <IconButton
                 sx={{ p: 0, fontSize: "inherit" }}
                 onClick={handleHotReload}
@@ -214,7 +214,7 @@ export default function Login() {
                 color={"text.secondary"}
                 // sx={{ ml: 4 }}
               >
-                {`© alima - ${pwaRelease} `} &nbsp;
+                {`${pwaRelease} `} &nbsp;
                 <IconButton
                   sx={{ p: 0, fontSize: "inherit" }}
                   onClick={handleHotReload}

@@ -691,7 +691,7 @@ const OrdenDetailsView: React.FC<OrdenDetailsViewProps> = ({
             </CardContent>
           </Card>
           {/* Powered by Alima */}
-          <FloatingPoweredByAlima />
+          {/* <FloatingPoweredByAlima /> */}
           {/* PDF Toolbar */}
           <InvoiceToolbar
             invoice={ordenReceipt}

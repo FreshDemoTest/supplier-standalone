@@ -39,12 +39,12 @@ export default function PoweredByAlima() {
   return (
     <FooterBox position={"fixed"} sx={{ backgroundColor: "common.white" }}>
       <PoweredTypo variant="h6">{"Powered by "}</PoweredTypo>
-      <Logo
+      {/* <Logo
         height={APPBAR_MOBILE * 1.6}
         width={APPBAR_MOBILE * 1.8}
         sx={{ mt: 1 }}
         {...{ onClick: handleForceReload }}
-      />
+      /> */}
     </FooterBox>
   );
 }

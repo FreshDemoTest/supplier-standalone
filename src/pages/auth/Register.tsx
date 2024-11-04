@@ -117,7 +117,7 @@ export default function Register() {
               align="center"
               color={"text.secondary"}
             >
-              {`© alima - ${pwaRelease} `} &nbsp;
+              {`${pwaRelease} `} &nbsp;
               <IconButton
                 sx={{ p: 0, fontSize: "inherit" }}
                 onClick={handleHotReload}
@@ -224,7 +224,7 @@ export default function Register() {
                   color={"text.secondary"}
                   sx={{ ml: -4 }}
                 >
-                  {`© alima - ${pwaRelease} `} &nbsp;
+                  {`${pwaRelease} `} &nbsp;
                   <IconButton
                     sx={{ p: 0, fontSize: "inherit" }}
                     onClick={handleHotReload}

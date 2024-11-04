@@ -353,12 +353,8 @@ export default function AccountPopover() {
 
           <Divider sx={{ mt: 0.5 }} />
           <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="caption"
-              align="center"
-              color={"text.secondary"}
-            >
-              {`© alima - ${pwaRelease} `} &nbsp;
+            <Typography variant="caption" align="center" color={"text.secondary"}>
+              {`${pwaRelease} `} &nbsp;
               <IconButton
                 sx={{ p: 0, fontSize: "inherit" }}
                 onClick={handleReloadVersion}
