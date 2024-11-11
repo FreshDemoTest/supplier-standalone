@@ -2,10 +2,8 @@ import { Icon } from "@iconify/react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import homeFill from "@iconify/icons-eva/home-outline";
-import personFill from "@iconify/icons-eva/person-outline";
 import settingsFill from "@iconify/icons-eva/settings-outline";
 import planFill from "@iconify/icons-eva/credit-card-outline";
-import questionMarkFill from "@iconify/icons-eva/question-mark-circle-outline";
 import listFillIcon from "@iconify/icons-ic/baseline-list-alt";
 import peopleFillIcon from "@iconify/icons-ic/people-outline";
 import categoryFillIcon from "@iconify/icons-ic/outline-category";
@@ -28,7 +26,7 @@ import {
 } from "@mui/material";
 import Cached from "@mui/icons-material/Cached";
 // routes
-import { PATHS_EXTERNAL, PATH_APP } from "../../routes/paths";
+import { PATH_APP } from "../../routes/paths";
 // hooks
 import useAuth from "../../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -99,19 +97,9 @@ const HELPER_OPTIONS = [
     linkTo: PATH_APP.account.root,
   },
   {
-    label: "Mi Perfil",
-    icon: personFill,
-    linkTo: PATH_APP.profile,
-  },
-  {
     label: "Suscripción Alima",
     icon: planFill,
     linkTo: PATH_APP.alimaAccount,
-  },
-  {
-    label: "Ayuda",
-    icon: questionMarkFill,
-    linkTo: PATHS_EXTERNAL.supportAlimaWA,
   },
 ];
 

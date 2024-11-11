@@ -50,7 +50,6 @@ import MenuPopover from "../MenuPopover";
 import { statusChip } from "../../styles/mappings";
 import { RemisionGridStyle, SummaryRow } from "../../styles/tables/ordenTable";
 import { UOMTypes } from "../../domain/supplier/SupplierProduct";
-import { FloatingPoweredByAlima } from "../footers/PoweredByAlima";
 import InvoiceToolbar from "../invoice/InvoiceToolbar";
 import { buildImageDetail } from "../../utils/imagesCdn";
 

@@ -1,9 +1,7 @@
-import { Icon } from "@iconify/react";
-import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { Grid } from "@mui/material";
 // import piechartFill from "@iconify/icons-ic/outline-pie-chart";
 // import barchartFill from "@iconify/icons-ic/outline-bar-chart";
 // import chartFill from "@iconify/icons-ic/multiline-chart";
-import whatsappFill from "@iconify/icons-ic/outline-whatsapp";
 // components & styles
 import MetabaseIFrame from "../report/MetabaseIFrame";
 import {
@@ -12,8 +10,6 @@ import {
   DataCardStyleSm,
 } from "../../styles/cards/dataCards";
 // utils & routes
-import track from "../../utils/analytics";
-import { PATHS_EXTERNAL } from "../../routes/paths";
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +20,6 @@ type DataInsightsSectionProps = {
 const DataInsightsSection: React.FC<DataInsightsSectionProps> = ({
   businessId,
 }) => {
-  const theme = useTheme();
 
   const metabaseDashs = {
     // main graph
@@ -111,7 +106,7 @@ const DataInsightsSection: React.FC<DataInsightsSectionProps> = ({
             </DataCardStyleLg>
           </Grid>
           {/* 2nd row */}
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={12}>
             {/* Churned Clients */}
             <DataCardStyleMd
               sx={{ height: { xs: 360, md: 390 }, pt: { xs: 0, md: 0 } }}
@@ -120,60 +115,6 @@ const DataInsightsSection: React.FC<DataInsightsSectionProps> = ({
             </DataCardStyleMd>
           </Grid>
           {/* Right column */}
-          <Grid item xs={12} md={4}>
-            <DataCardStyleSm sx={{ height: 280 }}>
-              {/* Whatsapp Automation promo */}
-              <Box sx={{ justifyContent: "center" }}>
-                <Box sx={{ mb: 1, justifyContent: "center", display: "flex" }}>
-                  <Icon
-                    icon={whatsappFill}
-                    width={64}
-                    height={64}
-                    style={{ color: theme.palette.divider }}
-                  />
-                </Box>
-                <Box sx={{ px: 2, justifyContent: "center" }}>
-                  <Typography
-                    variant="subtitle2"
-                    align="center"
-                    color="text.secondary"
-                  >
-                    ¿Te gustaría automatizar tus pedidos en WhatsApp?
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                    align="center"
-                  >
-                    Haz click aquí para saber más
-                  </Typography>
-                </Box>
-                <Box sx={{ justifyContent: "center", display: "flex" }}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    sx={{ mt: 2 }}
-                    onClick={() => {
-                      track("select_content", {
-                        visit: window.location.toString(),
-                        page: "Home",
-                        section: "DataInsights",
-                      });
-                      window.open(
-                        PATHS_EXTERNAL.whatsAppAutomationCTA,
-                        "_blank",
-                        "noopener,noreferrer"
-                      );
-                    }}
-                  >
-                    Más Información
-                  </Button>
-                </Box>
-              </Box>
-            </DataCardStyleSm>
-          </Grid>
         </Grid>
       </Grid>
     </Grid>

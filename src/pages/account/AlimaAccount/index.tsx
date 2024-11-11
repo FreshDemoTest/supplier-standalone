@@ -25,10 +25,8 @@ import {
 import { PATHS_EXTERNAL, PATH_APP } from "../../../routes/paths";
 // components
 import Page from "../../../components/Page";
-import AlimaAccountPlan from "./AlimaAccountPlan";
 import LoadingProgress from "../../../components/LoadingProgress";
 import ChargesInfo from "./ChargesInfo";
-import PayMethodsInfo from "./PayMethodsInfo";
 // utils
 // import { isAllowedTo } from '../../../utils/permissions';
 import track from "../../../utils/analytics";
@@ -52,7 +50,7 @@ export default function AlimaAccount() {
   const { hash } = useLocation();
   const { sessionToken } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<AlimaPlanTabType>("plan");
+  const [activeTab, setActiveTab] = useState<AlimaPlanTabType>("charges");
   const dispatch = useAppDispatch();
   const { alimaAccount, isLoading, business, historicAlimaInvoices } =
     useAppSelector((state) => state.account);
@@ -68,12 +66,12 @@ export default function AlimaAccount() {
   const allowCharges = isBusinessOnboarded
     ? isAllowedTo(allowed?.unitPermissions, "usersadmin-alima-billing-view")
     : true;
-  const allowPayMethods = isBusinessOnboarded
-    ? isAllowedTo(
-        allowed?.unitPermissions,
-        "usersadmin-alima-billing-method-view"
-      )
-    : true;
+  // const allowPayMethods = isBusinessOnboarded
+  //   ? isAllowedTo(
+  //       allowed?.unitPermissions,
+  //       "usersadmin-alima-billing-method-view"
+  //     )
+  //   : true;
 
   // fetch Alima Account
   useEffect(() => {
@@ -89,11 +87,11 @@ export default function AlimaAccount() {
   useEffect(() => {
     if (hash) {
       if (hash === "#plan") {
-        setActiveTab("plan");
+        setActiveTab("charges");
       } else if (hash === "#charges") {
         setActiveTab("charges");
       } else {
-        setActiveTab("paymethods");
+        setActiveTab("charges");
       }
     }
   }, [hash]);
@@ -101,11 +99,11 @@ export default function AlimaAccount() {
   // handlers
   const changeTab = (newValue: AlimaPlanTabType) => {
     // view alima plan tab is disabled
-    if (newValue === "plan" && !allowAlimaPlan) return;
+    if (newValue === "plan" && !allowCharges) return;
     // view charges tab is disabled
     if (newValue === "charges" && !allowCharges) return;
     // view pay methods tab is disabled
-    if (newValue === "paymethods" && !allowPayMethods) return;
+    if (newValue === "paymethods" && !allowCharges) return;
     // change tab
     navigate(`#${newValue}`);
   };
@@ -193,11 +191,11 @@ export default function AlimaAccount() {
                       <Typography variant="h4" gutterBottom>
                         Suscripción Alima
                       </Typography>
-                      <Typography sx={{ color: "text.secondary" }}>
+                      {/* <Typography sx={{ color: "text.secondary" }}>
                         {" "}
                         Verifica que tipo de plan tienes con nosotros, las
                         tarifas, las facturas históricas, y tus métodos de pago.
-                      </Typography>
+                      </Typography> */}
                     </Box>
                   </Box>
                 </Grid>
@@ -209,7 +207,7 @@ export default function AlimaAccount() {
                       aria-label="info alima account tabs"
                       centered
                     >
-                      <S3Tab
+                      {/* <S3Tab
                         disabled={!allowAlimaPlan}
                         value="plan"
                         label="Mi Suscripción"
@@ -218,7 +216,7 @@ export default function AlimaAccount() {
                         disabled={!allowPayMethods}
                         value="paymethods"
                         label="M. de pago"
-                      />
+                      /> */}
                       <S3Tab
                         disabled={!allowCharges}
                         value="charges"
@@ -226,20 +224,20 @@ export default function AlimaAccount() {
                       />
                     </StyledTabs>
                   </Box>
-                  {activeTab === "plan" && (
+                  {/* {activeTab === "plan" && (
                     <AlimaAccountPlan
                       alimaAccount={alimaAccount}
                       business={business}
                     />
-                  )}
+                  )} */}
                   {activeTab === "charges" && (
                     <ChargesInfo charges={historicAlimaInvoices} />
                   )}
-                  {activeTab === "paymethods" && (
+                  {/* {activeTab === "paymethods" && (
                     <PayMethodsInfo
                       paymentMethods={alimaAccount?.paymentMethods || []}
                     />
-                  )}
+                  )} */}
                 </Grid>
               </Grid>
             )}

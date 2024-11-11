@@ -1,7 +1,6 @@
 // material
 import {
   Box,
-  Button,
   Grid,
   IconButton,
   Paper,
@@ -9,8 +8,6 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-import analyticsFillIcon from "@iconify/icons-ic/outline-analytics";
-import { Icon } from "@iconify/react";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 //  hooks
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -21,7 +18,7 @@ import Page from "../../../components/Page";
 import DataReportsSection from "../../../components/report/DataReportsSection";
 // utils & routes
 import track from "../../../utils/analytics";
-import { PATHS_EXTERNAL, PATH_APP } from "../../../routes/paths";
+import { PATH_APP } from "../../../routes/paths";
 // redux
 import { getBusinessAccount } from "../../../redux/slices/account";
 import LoadingProgress from "../../../components/LoadingProgress";
@@ -117,39 +114,6 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
               hasPlugins={hasCustomReports}
             />
           )}
-        </Grid>
-        <Grid item xs={12} lg={8} sx={{ mt: theme.spacing(5) }}>
-          <Typography
-            variant="body2"
-            align="center"
-            color="text.secondary"
-            sx={{ mt: 1, px: 3 }}
-          >
-            Si necesitas un reporte personalizado, contáctanos y podemos
-            ayudarte.
-          </Typography>
-          {/* Button to request new Report */}
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-            <Button
-              startIcon={<Icon icon={analyticsFillIcon} />}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                track("set_checkout_option", {
-                  visit: window.location.toString(),
-                  page: "ListReports",
-                  section: "",
-                });
-                window.open(
-                  PATHS_EXTERNAL.requestReport,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-              }}
-            >
-              Solicitar Reporte
-            </Button>
-          </Box>
         </Grid>
       </Grid>
     </RootStyle>
@@ -313,57 +277,6 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
               </Box>
             </>
           )}
-        </Grid>
-        <Grid item xs={12} lg={8}>
-          {/* <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              minHeight: "60vh", // This makes sure the box takes up the full viewport height
-            }}
-          > */}
-          <Box
-            justifyContent={"center"}
-            alignItems={"center"}
-            sx={{
-              mb: theme.spacing(1),
-              px: theme.spacing(1),
-              mt: "auto", // This pushes the Grid to the bottom
-            }}
-          >
-            <Typography
-              variant="body2"
-              align="center"
-              color="text.secondary"
-              sx={{ mt: 1, px: 3 }}
-            >
-              Si necesitas un reporte personalizado, contáctanos y podemos
-              ayudarte.
-            </Typography>
-            {/* Button to request new Report */}
-            <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-              <Button
-                startIcon={<Icon icon={analyticsFillIcon} />}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  track("set_checkout_option", {
-                    visit: window.location.toString(),
-                    page: "ListCustomReports",
-                    section: "",
-                  });
-                  window.open(
-                    PATHS_EXTERNAL.requestReport,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                }}
-              >
-                Solicitar Reporte
-              </Button>
-            </Box>
-          </Box>
-          {/* </Box> */}
         </Grid>
       </Grid>
     </RootStyle>
