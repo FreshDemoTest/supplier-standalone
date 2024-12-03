@@ -30,6 +30,7 @@ import {
   exportPriceListFile,
   getAllUnitsPriceLists,
   clearExportPriceListSuccess,
+  deletePriceList,
 } from "../../../redux/slices/supplier";
 import { getActiveClients } from "../../../redux/slices/client";
 // components
@@ -84,6 +85,7 @@ export default function PriceListDetails() {
   const { units, business } = useAppSelector((state) => state.account);
   const { activeClients } = useAppSelector((state) => state.client);
   const [downloadPDF, setDownloadPDF] = useState<boolean>(false);
+  const [openDeletePriceList, setDeletePriceList] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   // specified price list
   const [priceListState, setPriceListState] = useState<
@@ -136,6 +138,12 @@ export default function PriceListDetails() {
       label: "Descargar Cotización",
       onClick: () => {
         setDownloadPDF(true);
+      },
+    },
+    {
+      label: "Eliminar Lista de Precios",
+      onClick: () => {
+        setDeletePriceList(true);
       },
     },
   ];
@@ -261,6 +269,33 @@ export default function PriceListDetails() {
     setSortedProducts(_sortedProducts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceListState]);
+
+  const handleDeletePriceList = async () => {
+    try {
+      await dispatch(
+        deletePriceList(
+          priceListId || "",
+          units[0].id ||"",
+          sessionToken || ""
+        )
+      );
+      enqueueSnackbar(`Lista de precios correctamente eliminada`, {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
+      navigate(
+        PATH_APP.catalog.listPrices
+      );
+
+    } catch (err: any) {
+      console.warn(err);
+      enqueueSnackbar(`Error al eliminar lista de precios`, {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    }
+    setOpenDownloadDiag(false);
+  };
 
   // render vars
   // expired
@@ -592,6 +627,34 @@ export default function PriceListDetails() {
           actionFn: () => handleDownloadExport("csv"),
         }}
       ></BasicDialog>
+      {priceListState !== undefined && (
+          priceListState.listName !== "Lista General de Precios" ?
+          (<BasicDialog
+            closeMark
+            open={openDeletePriceList}
+            onClose={() => setDeletePriceList(false)}
+            title={"Confirma eliminar lista de precios"}
+            msg={"Al elminar lista de precios no podras recuperarla"}
+            continueAction={{
+              active: true,
+              msg: "Elimnar lista de precios",
+              actionFn: () => handleDeletePriceList(),
+            }}
+          ></BasicDialog>
+        ) :
+        <BasicDialog
+            closeMark
+            open={openDeletePriceList}
+            onClose={() => setDeletePriceList(false)}
+            title={"No se puede eliminar la lista de precio por defecto"}
+            continueAction={{
+              active: true,
+              msg: "Regresar",
+              actionFn: () => setDeletePriceList(false),
+            }}
+          ></BasicDialog>
+      )
+      }
     </>
   );
 }

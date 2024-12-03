@@ -948,6 +948,7 @@ export function getActiveClients(sUnitIds: string[], token: string) {
                   assignedUnit: supRes.relation.supplierUnitId,
                 },
                 taxId: supRes.branch.taxInfo?.taxId || "",
+                priceList: supRes.priceListName
               } as ClientProfileType;
             })
         )

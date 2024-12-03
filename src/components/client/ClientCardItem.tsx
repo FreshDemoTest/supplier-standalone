@@ -115,6 +115,19 @@ const ClientCard: React.FC<ClientCardProps> = ({
             >
               <u>{categ?.label}</u>
             </Typography>
+            {client.priceList && (
+              <Chip
+                label={client.priceList}
+                variant="outlined"
+                size="small"
+                color= "success"
+                sx={{
+                  my: theme.spacing(1),
+                  backgroundColor: theme.palette.primary.light,
+                  fontWeight: 'bold'
+                }}
+              />
+            )}
           </MHidden>
         </Box>
       </Grid>

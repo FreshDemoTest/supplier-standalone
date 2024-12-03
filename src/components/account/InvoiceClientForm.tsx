@@ -137,7 +137,20 @@ const InvoicClientForm: React.FC<InvoiceClientFormProps> = ({
             label="Dirección Fiscal"
             {...getFieldProps("taxAddress")}
             error={Boolean(touched.taxAddress && errors.taxAddress)}
-            helperText={(touched.taxAddress && errors.taxAddress) as ReactNode}
+            helperText={
+              touched.taxAddress &&
+              (typeof errors.taxAddress === 'string' ? (
+                errors.taxAddress
+              ) : (
+                <>
+                  {getFieldProps("taxAddress").value && getFieldProps("taxAddress").value.length > 100 && (
+                    <span style={{ color: 'orange' }}>
+                      Advertencia: La dirección fiscal supera los 100 caracteres.
+                    </span>
+                  )}
+                </>
+              ))
+            }
           />
 
           <Grid container>

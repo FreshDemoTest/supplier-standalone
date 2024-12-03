@@ -57,3 +57,13 @@ export type SupplierPriceListUploadStateType = SupplierPriceListFormType & {
 export type SupplierPriceListStateType = SupplierPriceListFormType & {
   pricesDetails: PriceListDetailsType[];
 };
+
+export type ProductSupplierPriceListType = {
+  priceId: string;
+  priceListName: string;
+  unitName: string;
+  priceListId: string;
+  price: number;
+  newPrice: number;
+  isLoading: boolean
+};

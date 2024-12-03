@@ -76,6 +76,6 @@ export type ClientType = {
 };
 
 export type ClientProfileType = ClientBranchType &
-  ClientPOCType & { business?: ClientType } & ClientInvoiceInfoType & {
+  ClientPOCType & { business?: ClientType } & {priceList?: string} & ClientInvoiceInfoType & {
     ecommerceUser?: ClientEcommerceUserInfoType;
   };

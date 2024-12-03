@@ -83,6 +83,7 @@ export const GET_ACTIVE_CLIENTS = `query getActiveRestoClients($supUnitIds: [UUI
             taxId: mxSatId
           }
         }
+        priceListName
       }
       ... on SupplierRestaurantError {
         code

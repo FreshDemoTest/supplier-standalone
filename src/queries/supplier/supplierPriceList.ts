@@ -41,8 +41,16 @@ export const GET_SUPPLIER_PRICE_LISTS = `query getSupUnitPriceLists($supUnitId: 
   export const GET_SUPPLIER_PRODUCT_DEFAULT_PRICE_LISTS = `query getSupProductDefaultPriceLists($supProdId: UUID!) {
     getSupplierProductDefaultPriceLists(supplierProductId: $supProdId) {
       ... on SupplierUnitDefaultPriceListsGQL {
-        units {
+        unit {
           unitName
+        }
+        priceList{
+          name
+          id
+        }
+        price {
+          price
+          id
         }
       }
       ... on SupplierPriceListError {
@@ -50,3 +58,4 @@ export const GET_SUPPLIER_PRICE_LISTS = `query getSupUnitPriceLists($supUnitId: 
       }
     }
   }`;
+

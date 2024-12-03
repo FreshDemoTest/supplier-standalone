@@ -17,6 +17,15 @@ import {
   Box,
   Autocomplete,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TableHead,
+  TableRow,
+  TableCell,
+  DialogActions,
+  styled,
+  TableContainer,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // redux
@@ -26,6 +35,8 @@ import {
   getProductCategories,
   searchEditProductSATCodes,
   searchProductSATCodes,
+  setSupplierUnitDefaultPriceLists,
+  updateOneProductPriceList,
 } from "../../redux/slices/supplier";
 // hooks
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -50,7 +61,9 @@ import { KeyValueOption, MultiKeyValueInput } from "../MultiKeyValueInput";
 import { MultiValueInput } from "../MultiValueInput";
 import { ProductImageSelector } from "./images/ProductImageSelector";
 import MarkdownEditor from "../MarkdownEditor";
-import BasicDialog from "../navigation/BasicDialog";
+import { DynamicTableLoader } from "../DynamicLoader";
+import Decimal from "decimal.js";
+import { ProductSupplierPriceListType } from "../../domain/supplier/SupplierPriceList";
 
 // ----------------------------------------------------------------------
 
@@ -61,11 +74,132 @@ const UOMOptions = Object.entries(UOMTypes).map(([key, value]) => ({
 
 // ----------------------------------------------------------------------
 
+type PriceIncrementerProps = {
+  priceDetail: ProductSupplierPriceListType;
+  AllPricesListsByProduct: [ProductSupplierPriceListType]
+};
+
+const PriceIncrementer: React.FC<PriceIncrementerProps> = ({
+  priceDetail,
+  AllPricesListsByProduct
+}) => {
+  const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const [quant, _setQuant] = useState<number | string>(priceDetail.newPrice);
+
+  const setQuant = (value: number | string) => {
+    if (typeof value === "string") {
+      _setQuant(value);
+      return value;
+    } else {
+      if (value.toString() === "NaN") {
+        _setQuant(0);
+        return value;
+      }
+      const _val = new Decimal(value).toDecimalPlaces(2).toNumber();
+      if (_val < 0) {
+        _setQuant(0);
+        return 0;
+      }
+      _setQuant(_val);
+      return _val;
+    }
+  };
+
+  useEffect(() => {
+    setQuant(priceDetail.price);
+  }, [priceDetail.price]);
+
+  const validateMultiple = (value: number) => {
+    // avoids NaN and empy values
+    if (value < 0) {
+      const textValue = setQuant(0);
+      _setQuant(parseFloat(textValue.toString()));
+      const UpdatedAllPricesListsByProduct = AllPricesListsByProduct.map((priceList) =>
+        priceList.priceListId === priceDetail.priceListId ?
+          { ...priceDetail, newPrice: value } : priceList
+      )
+      dispatch(setSupplierUnitDefaultPriceLists(
+        UpdatedAllPricesListsByProduct
+      ))
+    }
+    else {
+      const textValue = setQuant(value);
+      _setQuant(parseFloat(textValue.toString()));
+      const UpdatedAllPricesListsByProduct = AllPricesListsByProduct.map((priceList) =>
+        priceList.priceListId === priceDetail.priceListId ?
+          { ...priceDetail, newPrice: value } : priceList
+      )
+      dispatch(setSupplierUnitDefaultPriceLists(
+        UpdatedAllPricesListsByProduct
+      ))
+    }
+  };
+
+
+  return (
+    <Box
+      sx={{
+        width: { xs: 120, md: 120 },
+        textAlign: "right",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <div
+        style={{
+          marginBottom: theme.spacing(0.5),
+          padding: theme.spacing(0.5, 0.75),
+          borderRadius: theme.shape.borderRadius,
+          border: `solid 1px ${theme.palette.text.disabled}`,
+        }}
+      >
+        <TextField
+          value={quant}
+          type="number"
+          onChange={(e) => setQuant(e.target.value)}
+          onBlur={(e) => validateMultiple(parseFloat(e.target.value))}
+          size="small"
+          sx={{
+            minWidth: 90,
+            textAlign: "center",
+          }}
+          inputProps={{
+            inputMode: "decimal",
+            style: {
+              paddingLeft: theme.spacing(0),
+              marginLeft: theme.spacing(-2),
+              paddingRight: theme.spacing(0.5),
+              textAlign: "center",
+            },
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">$&nbsp;</InputAdornment>
+            ),
+          }}
+        />
+      </div>
+    </Box>
+  );
+};
+
 type SupplierProductFormProps = {
   onSuccessCallback: (flag: boolean) => void;
   supProductState?: SupplierProductType;
   editMode?: boolean;
 };
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  width: 600,
+  minHeight: 480,
+  overflow: "auto",
+  [theme.breakpoints.down("md")]: {
+    minHeight: 540,
+    width: 300,
+  },
+}));
 
 const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
   onSuccessCallback,
@@ -100,7 +234,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
   const theme = useTheme();
   const { sessionToken } = useAuth();
   const dispatch = useAppDispatch();
-  const { productCategories, satCodes: globalSAT, supplierUnitDefaultPricesLists } = useAppSelector(
+  const { productCategories, satCodes: globalSAT, AllPricesListsByProduct } = useAppSelector(
     (state) => state.supplier
   );
   const { business } = useAppSelector((state) => state.account);
@@ -282,6 +416,61 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
     );
   };
 
+
+  const onClose = () => {
+    setConfirmModalOpen(false)
+  }
+
+  const UpdatePriceList = async (priceList: any) => {
+    try {
+      if (priceList.newPrice <= 0){
+        enqueueSnackbar("El tiene que ser mayor a 0", {
+          variant: "error",
+          action: (key) => (
+            <IconButton size="small" onClick={() => closeSnackbar(key)}>
+              <Icon icon={closeFill} />
+            </IconButton>
+          ),
+        });
+      }
+      else {
+        // Add product
+        await dispatch(
+          updateOneProductPriceList(
+            priceList.priceListId || "",
+            priceList.priceId,
+            priceList.newPrice,
+            sessionToken || "",
+            AllPricesListsByProduct || []
+          )
+        );
+        enqueueSnackbar("Precio correctamente.", {
+          variant: "success",
+          action: (key) => (
+            <IconButton size="small" onClick={() => closeSnackbar(key)}>
+              <Icon icon={closeFill} />
+            </IconButton>
+          ),
+        });
+      }
+
+    } catch (error) {
+      console.error(error);
+      let errmsg = ""; // Declare the variable errmsg
+      if ((error as Error).message) {
+        errmsg = (error as Error).message; // Assign value to errmsg
+      }
+      enqueueSnackbar(errmsg, {
+        variant: "error",
+        action: (key) => (
+          <IconButton size="small" onClick={() => closeSnackbar(key)}>
+            <Icon icon={closeFill} />
+          </IconButton>
+        ),
+      });
+    }
+  }
+
   // yup schema based on supProductState
   const SupplierProductSchema = Yup.object().shape({
     id: Yup.string(),
@@ -355,75 +544,88 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
     validateOnChange: true,
     onSubmit: async (values, { setErrors, setSubmitting }) => {
       try {
-        if (!editMode) {
-          // Add product
-          await dispatch(
-            addSupplierProduct(
-              business?.id || "",
-              sessionToken || "",
-              values.productDescription,
-              values.buyUnit || "kg",
-              values.conversionFactor || 1,
-              values.minimumQuantity || 1,
-              values.sellUnit,
-              values.sku,
-              values.taxAmount || 0,
-              values.taxId || "00000000",
-              values.unitMultiple || 1,
-              undefined,
-              values.defaultPrice,
-              values.estimatedWeight,
-              undefined,
-              values.tags,
-              values.longDescription || "",
-              values.iepsAmount || undefined
-            )
-          );
-          enqueueSnackbar("Producto creado correctamente.", {
-            variant: "success",
+        if (values.taxAmount === 8 || values.taxAmount === 16) {
+          enqueueSnackbar("El iva solo puede ser del 8% o 16%", {
+            variant: "error",
             action: (key) => (
               <IconButton size="small" onClick={() => closeSnackbar(key)}>
                 <Icon icon={closeFill} />
               </IconButton>
             ),
           });
-        } else {
-          // edit product
-          await dispatch(
-            editSupplierProduct(
-              values?.id || "",
-              sessionToken || "",
-              values.productDescription,
-              values.buyUnit || "kg",
-              values.conversionFactor || 1,
-              values.minimumQuantity || 1,
-              values.sellUnit,
-              values.sku,
-              values.taxAmount || 0,
-              values.taxId || "00000000",
-              values.unitMultiple || 1,
-              undefined,
-              values.defaultPrice,
-              values.estimatedWeight,
-              values.upc,
-              values.tags,
-              values.longDescription || "",
-              values.iepsAmount || undefined
-            )
-          );
-          enqueueSnackbar("Producto actualizado correctamente.", {
-            variant: "success",
-            action: (key) => (
-              <IconButton size="small" onClick={() => closeSnackbar(key)}>
-                <Icon icon={closeFill} />
-              </IconButton>
-            ),
-          });
+          setSubmitting(false);
         }
-        await delay(500);
-        // action
-        setSubmitting(false);
-        onSuccessCallback(true);
+        else {
+          if (!editMode) {
+            // Add product
+            await dispatch(
+              addSupplierProduct(
+                business?.id || "",
+                sessionToken || "",
+                values.productDescription,
+                values.buyUnit || "kg",
+                values.conversionFactor || 1,
+                values.minimumQuantity || 1,
+                values.sellUnit,
+                values.sku,
+                values.taxAmount || 0,
+                values.taxId || "00000000",
+                values.unitMultiple || 1,
+                undefined,
+                values.defaultPrice,
+                values.estimatedWeight,
+                undefined,
+                values.tags,
+                values.longDescription || "",
+                values.iepsAmount || undefined
+              )
+            );
+            enqueueSnackbar("Producto creado correctamente.", {
+              variant: "success",
+              action: (key) => (
+                <IconButton size="small" onClick={() => closeSnackbar(key)}>
+                  <Icon icon={closeFill} />
+                </IconButton>
+              ),
+            });
+          } else {
+            // edit product
+            await dispatch(
+              editSupplierProduct(
+                values?.id || "",
+                sessionToken || "",
+                values.productDescription,
+                values.buyUnit || "kg",
+                values.conversionFactor || 1,
+                values.minimumQuantity || 1,
+                values.sellUnit,
+                values.sku,
+                values.taxAmount || 0,
+                values.taxId || "00000000",
+                values.unitMultiple || 1,
+                undefined,
+                values.defaultPrice,
+                values.estimatedWeight,
+                values.upc,
+                values.tags,
+                values.longDescription || "",
+                values.iepsAmount || undefined
+              )
+            );
+            enqueueSnackbar("Producto actualizado correctamente.", {
+              variant: "success",
+              action: (key) => (
+                <IconButton size="small" onClick={() => closeSnackbar(key)}>
+                  <Icon icon={closeFill} />
+                </IconButton>
+              ),
+            });
+          }
+          await delay(500);
+          // action
+          setSubmitting(false);
+          onSuccessCallback(true);
+        }
       } catch (error) {
         console.error(error);
         let errmsg = ""; // Declare the variable errmsg
@@ -431,7 +633,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
           errmsg = "Ya existe un producto con ese SKU."; // Assign value to errmsg
         }
         else {
-          errmsg = "Error creando el producto."; // Assign value to errmsg
+          errmsg = (error as Error).message; // Assign value to errmsg
         }
         enqueueSnackbar(errmsg, {
           variant: "error",
@@ -468,27 +670,97 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
 
         <Grid container spacing={2}>
-          <BasicDialog
+        <Dialog
             open={confirmModalOpen}
-            onClose={() => setConfirmModalOpen(false)}
-            closeMark={false}
-            title={"Listas de precios por default del producto"}
-            backAction={{
-              active: true,
-              msg: "Cerrar",
-              actionFn: () => {
-                setConfirmModalOpen(false);
-              },
-            }}
+            onClose={onClose}
+            aria-labelledby="addproduct-to-pricelist-dialog"
+            aria-describedby="addproduct-to-pricelist-dialog-description"
           >
-            <div>
-              {supplierUnitDefaultPricesLists.map((item: string, index: number) => (
-                <div key={index} style={{ marginBottom: "10px" }}>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </BasicDialog>
+            <DialogTitle id="addproduct-to-pricelist-dialog">
+              Listas de precios por default del producto
+            </DialogTitle>
+            <DialogContent>
+              <Box>
+                <DynamicTableLoader
+                  ContainerType={StyledTableContainer}
+                  elements={AllPricesListsByProduct}
+                  headers={
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: theme.palette.text.disabled }}>
+                          Lista de precios
+                        </TableCell>
+                        <TableCell sx={{ color: theme.palette.text.disabled }}>
+                          Precio
+                        </TableCell>
+                        <TableCell
+                          sx={{ color: theme.palette.text.disabled }}
+                          align="right"
+                        ></TableCell>
+                      </TableRow>
+                    </TableHead>
+                  }
+                  renderMap={(fPriceList) => {
+                    return fPriceList.map((price) => {
+                      return (
+                        <TableRow key={price.priceListId}>
+                          <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <Box>
+                                <Typography variant="subtitle2">
+                                  {price.priceListName}
+                                </Typography>
+                                <Typography
+                                  component="span"
+                                  variant="body1"
+                                  color="textSecondary"
+                                  sx={{ fontSize: 12 }}
+                                >
+                                  {price.unitName}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ minWidth: 120, maxWidth: 180 }}>
+                            <PriceIncrementer
+                              priceDetail={price}
+                              AllPricesListsByProduct={AllPricesListsByProduct}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
+                            {price.isLoading ?
+                              (
+                                <LoadingProgress></LoadingProgress>
+                              ) : (
+                                <Button
+                                  variant="contained"
+                                  color="info"
+                                  disabled={price.price === price.newPrice || price.newPrice < 0 || Number.isNaN(price.newPrice)}
+                                  onClick={() => {
+                                    UpdatePriceList(
+                                      price);
+                                  }}
+                                >
+                                  Actualizar
+                                </Button>
+                              )
+                            }
+
+                          </TableCell>
+                        </TableRow>
+                      );
+                    });
+                  }}
+                >
+                </DynamicTableLoader>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button sx={{ mr: 2, my: 1 }} onClick={onClose}>
+                Cerrar
+              </Button>
+            </DialogActions>
+          </Dialog>
           {/* General info section */}
           <Grid item xs={12} md={6} sx={{ px: { xs: 0, md: 6 } }}>
             <Stack spacing={2}>
@@ -923,7 +1195,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
                       fullWidth
                       variant="contained"
                       color="info"
-                      disabled={supplierUnitDefaultPricesLists.length === 0}
+                      disabled={AllPricesListsByProduct.length === 0}
                       sx={{ mt: 1 }}
                       onClick={() => {
                         setConfirmModalOpen(true);

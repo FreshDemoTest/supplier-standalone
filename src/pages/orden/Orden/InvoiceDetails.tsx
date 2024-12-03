@@ -254,7 +254,7 @@ const InvoiceDetailsView: React.FC<InvoiceDetailsViewProps> = ({ ordenId }) => {
     });
     try {
       await dispatch(triggerGenerateInvoice(ordenId, sessionToken || ""));
-      enqueueSnackbar("Factura generada con éxito", { variant: "success" });
+      // enqueueSnackbar("Factura generada con éxito", { variant: "success" });
       dispatch(getInvoiceDetails(ordenId, sessionToken || ""));
       dispatch(getInvoicesByOrden(ordenId, sessionToken || ""));
     } catch (error) {

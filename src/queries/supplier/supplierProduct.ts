@@ -514,3 +514,34 @@ export const REORDER_SUPPLIER_PRODUCT_IMAGES = `mutation reorderSupplierImages($
     }
   }
 }`;
+
+export const DELETE_SUPPLIER_PRICE_LIST = `mutation deleteSupplierPriceList($priceListId: UUID!, $unitId: UUID!) {
+  deleteSupplierPriceList(
+    supplierProductPriceListId: $priceListId
+    unitId: $unitId
+  ) {
+    ... on DeleteSupplierPriceListStatus {
+      msg
+    }
+    ... on SupplierPriceListError {
+      code
+      msg
+    }
+  }
+}`;
+
+export const UPDATE_ONE_SUPPLIER_PRICE_LIST = `mutation editProductSupplierPriceList($priceListId: UUID!, $priceId: UUID!, $price:Float!) {
+  editProductSupplierPriceList(
+    supplierPriceListId: $priceListId
+    supplierProductPriceId: $priceId
+    price: $price
+  ) {
+    ... on UpdateOneSupplierPriceListStatus {
+      msg
+    }
+    ... on SupplierPriceListError {
+      code
+      msg
+    }
+  }
+}`;
