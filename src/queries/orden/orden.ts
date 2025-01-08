@@ -326,3 +326,112 @@ export const EXPORT_HISTORIC_ORDENES = `query exportOrdenesByUnit($expFormat: St
     }
   }
 }`;
+
+export const EXTERNAL_CONFIRM_ORDEN = `mutation extrenalConfirmOrden($ordenId: UUID!) {
+  confirmOrden(ordenId: $ordenId) {
+    ... on OrdenStatusConfirmMsg {
+      msg
+      status
+    }
+    ... on OrdenError {
+      code
+    }
+  }
+}`;
+
+
+export const GET_EXT_ORDEN_DETAILS = `query getExtOrdenDetails($ordenId: UUID!) {
+  getExternalOrden(ordenId: $ordenId) {
+    ... on OrdenGQL {
+      id
+      ordenNumber
+      cart {
+        unitPrice
+        subtotal
+        sellUnit
+        quantity
+        supplierProductPriceId
+        suppProd {
+          id
+          sellUnit
+          sku
+          description
+          minQuantity
+          unitMultiple
+          estimatedWeight
+        }
+      }
+      details {
+        cartId
+        approvedBy
+        ordenId
+        version
+        total
+        tax
+        subtotalWithoutTax
+        subtotal
+        shippingCost
+        serviceFee
+        paymentMethod
+        packagingCost
+        discount
+        deliveryDate
+        createdAt
+        deliveryTime {
+          end
+          start
+        }
+        comments
+        createdBy
+        restaurantBranchId
+      }
+      status {
+        status
+        createdAt
+      }
+      ordenType
+      paystatus {
+        status
+        createdAt
+      }
+      supplier {
+        supplierBusinessAccount {
+          supplierBusinessId
+          legalRepName
+          email
+          phoneNumber
+        }
+        supplierBusiness {
+          name
+        }
+      }
+      branch {
+        branchName
+        id
+        fullAddress
+        branchCategory {
+          restaurantCategoryId
+        }
+        contactInfo {
+          businessName
+          displayName
+          email
+          phoneNumber
+        }
+      }
+      cart {
+        cartId
+        supplierProductPriceId
+        unitPrice
+        subtotal
+        comments
+        createdBy
+        createdAt
+        lastUpdated
+      }
+    }
+    ... on OrdenError {
+      code
+    }
+  }
+}`;

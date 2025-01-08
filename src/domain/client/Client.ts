@@ -24,6 +24,7 @@ export type ClientBranchType = {
 };
 
 export type ClientPOCType = {
+  businessName?: string;
   displayName?: string;
   email?: string;
   phoneNumber?: string;

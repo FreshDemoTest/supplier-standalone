@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { alimaExternalPublicHost } from "../config";
+
 function buildpath(root: string, sublink: string) {
   return `${root}/${sublink}`;
 }
@@ -117,7 +119,7 @@ export const PATHS_EXTERNAL = {
     "https://docs.google.com/document/d/1IBhnKeVO-sOztk5LXmj5jtp_sNT5HS5XbN-jP_fsoSI/preview",
   privacyPolicy:
     "https://docs.google.com/document/d/1F1imFPJfvnMVMvCMXkLrtfVJIsEV83HRIuIzVISz8G0/preview",
-  restaurantApp: "https://app.alima.la",
+  restaurantApp: alimaExternalPublicHost,
   whatsAppAutomationCTA: "https://forms.gle/DenaTgEE73LKQ1JV6",
   requestReport:
     "https://api.whatsapp.com/send/?phone=%2B527751084135&type=phone_number&app_absent=0&text=Hola%2C+soy+usuario+de+Alima+Supply+y+quiero+más+información+de+los+Reportes+Personalizados",

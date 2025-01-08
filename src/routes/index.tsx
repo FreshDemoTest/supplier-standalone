@@ -107,6 +107,9 @@ const Report = lazy(() => import("../pages/report/Report"));
 const ListEcommerce = lazy(() => import("../pages/ecommerce/ListMetrics"));
 
 // External
+const SupplierPurchaseOrden = lazy(
+  () => import("../pages/external/SupplierPurchaseOrden")
+);
 
 // Authentication
 const Login = lazy(() => import("../pages/auth/Login"));
@@ -472,6 +475,25 @@ const appRoutes = [
       },
       
     ],
+  },
+  // External Temporal Links
+  {
+    route: {
+      path: 'ext',
+      element: <Navigate to={PATH_AUTH.login} replace />
+    },
+    subpaths: [
+      // Link para ver Orden de Compra
+      {
+        path: 'supplier/purchase-order',
+        element: <SupplierPurchaseOrden />
+      },
+      // Link para Marketplace landing
+      // {
+      //   path: 'marketplace',
+      //   element: <MarketplaceLanding />
+      // }
+    ]
   },
   // ----------------------------------------------------------------------
   // Redirect Routes

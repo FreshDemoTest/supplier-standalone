@@ -29,7 +29,9 @@ import {
   CONFIRM_ORDEN,
   DELIVER_ORDEN,
   EXPORT_HISTORIC_ORDENES,
+  EXTERNAL_CONFIRM_ORDEN,
   GET_ACTIVE_ORDENES_BY_UNIT,
+  GET_EXT_ORDEN_DETAILS,
   GET_ORDEN_DETAILS,
   NEW_SUPPLIER_ORDEN,
   REINVOICE_SUPPLIER_ORDEN,
@@ -173,6 +175,10 @@ const initialState = {
   // external
   externalOrdenDetails: {} as OrdenType | null,
   externalInvoiceStatus: {
+    success: false,
+    message: "",
+  },
+  externalOrdenStatus: {
     success: false,
     message: "",
   },
@@ -504,6 +510,12 @@ const slice = createSlice({
     // SET External Invoice
     resetLoadingSuccess(state) {
       state.isLoading = false;
+    },
+    // SET External Orden
+    setExternalOrdenSuccess(state, action) {
+      state.isLoading = false;
+      state.externalOrdenStatus = action.payload.status;
+      state.externalOrdenDetails = action.payload.orden;
     },
   },
 });
@@ -3171,6 +3183,173 @@ export function updatePayReceipt(
       }
     } catch (error: any) {
       console.warn("Issues uploading payment receipt");
+      dispatch(
+        slice.actions.hasError({
+          active: true,
+          body: error,
+        })
+      );
+      throw new Error(error.toString());
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+/**
+ * Confirm Orden from external info
+ * @param ordenId
+ * @returns
+ */
+export function externalConfirmOrden(ordenId: string) {
+  return async (dispatch: any) => {
+    try {
+      if (!ordenId) {
+        console.warn("Orden Id is undefined");
+        return;
+      }
+      dispatch(slice.actions.startLoading());
+      // grapqhl call to cancel orden
+      const { data, error } = await graphQLFetch({
+        query: EXTERNAL_CONFIRM_ORDEN,
+        variables: {
+          ordenId: ordenId,
+        },
+      });
+      if (error) {
+        throw error;
+      }
+      if (!data && !data?.confirmOrden) {
+        throw new Error("Data is undefined");
+      }
+      if (data?.confirmOrden.code > 0) {
+        throw new Error(data?.confirmOrden.msg);
+      }
+      if (data?.confirmOrden.status) {
+        dispatch(slice.actions.finishProcess());
+      } else {
+        throw new Error("Orden not confirmed");
+      }
+    } catch (error: any) {
+      console.warn("Issues confriming orden");
+      dispatch(
+        slice.actions.hasError({
+          active: true,
+          body: error,
+        })
+      );
+      throw new Error(error.toString());
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+/**
+ * Get External available orden details
+ * @param ordenId
+ * @returns
+ */
+export function getExternalOrdenDetails(ordenId: string) {
+  return async (dispatch: any) => {
+    try {
+      if (!ordenId) {
+        console.warn("Orden Id is undefined");
+        return;
+      }
+      dispatch(slice.actions.startLoading());
+      // grapqhl call for orden details
+      const { data, error } = await graphQLFetch({
+        query: GET_EXT_ORDEN_DETAILS,
+        variables: {
+          ordenId: ordenId,
+        },
+      });
+      if (error) {
+        throw error;
+      }
+      if (!data && !data?.getExternalOrden) {
+        throw new Error("Data is undefined");
+      }
+      if (data?.getExternalOrden.code > 0 || !data?.getExternalOrden.id) {
+        dispatch(
+          slice.actions.setExternalOrdenSuccess({
+            status: {
+              success: false,
+              message: "No sé encontró la orden.",
+            },
+            orden: {} as OrdenType,
+          })
+        );
+      }
+      const o = data.getExternalOrden;
+      const v = o.branch;
+      dispatch(
+        slice.actions.setExternalOrdenSuccess({
+          status: {
+            success: true,
+            message: "Orden encontrada.",
+          },
+          orden: {
+            ...o.details,
+            id: o.id,
+            ordenType: o.ordenType,
+            ordenNumber: o.ordenNumber,
+            status: o.status.status.toLowerCase() as ordenStatusType,
+            restaurantBranch: {
+              id: v.id,
+              branchName: v.branchName,
+              branchCategory: v.branchCategory.restaurantCategoryId,
+              fullAddress: v.fullAddress,
+              phoneNumber: v.contactInfo.phoneNumber,
+              email: v.contactInfo.email,
+              displayName: v.contactInfo.displayName,
+              businessName: v.contactInfo.businessName,
+            },
+            supplier: {
+              id: o.supplier.supplierBusinessAccount.supplierBusinessId,
+              supplierName: o.supplier.supplierBusiness.name,
+              displayName: o.supplier.supplierBusinessAccount.legalRepName,
+              email: o.supplier.supplierBusinessAccount.email,
+              phoneNumber: o.supplier.supplierBusinessAccount.phoneNumber,
+            },
+            cart: {
+              id: o.details.cartId,
+              cartProducts: o.cart.map(
+                (p: any) =>
+                  ({
+                    id: p.suppProd.id, // using this ID only for reference in frontend
+                    supplierProduct: {
+                      id: p.suppProd.id,
+                      productDescription: p.suppProd.description,
+                      sellUnit: p.suppProd.sellUnit,
+                      sku: p.suppProd.sku,
+                      minimumQuantity: p.suppProd.minQuantity,
+                      unitMultiple: p.suppProd.unitMultiple,
+                      estimatedWeight: p.suppProd.estimatedWeight,
+                    },
+                    quantity: p.quantity,
+                    price: {
+                      uuid: p.supplierProductPriceId,
+                      amount: p.unitPrice,
+                      unit: "MXN", // hard coded for now
+                      validUntil: o.details.deliveryDate, // placed for reference only
+                    },
+                    total: p.subtotal,
+                  } as CartProductType)
+              ), // not used in active ordenes listing
+            },
+            deliveryTime: `${o.details.deliveryTime.start} - ${o.details.deliveryTime.end}`,
+            lastUpdated: o.details.createdAt, // same as created at given data model
+            createdBy: {
+              id: o.details.createdBy,
+              firstName: "", // not used
+              lastName: "", // not used
+              email: "", // not used
+            },
+          },
+        })
+      );
+    } catch (error: any) {
+      console.warn("Issues getting external orden details");
       dispatch(
         slice.actions.hasError({
           active: true,

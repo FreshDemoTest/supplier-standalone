@@ -81,4 +81,7 @@ export const alimaAppDeployment: appDeployment = {
   }`,
 };
 
+export const alimaExternalPublicHost: string | undefined =
+  process.env.REACT_APP_EXTERNAL_PUBLIC_HOST || ""
+
 export const pwaRelease: string = 'supply-v2.5.8';
