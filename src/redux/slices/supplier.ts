@@ -32,7 +32,10 @@ import {
   UPLOAD_BATCH_SUPPLIER_PRODUCTS,
   UPLOAD_BATCH_SUPPLIER_PRODUCT_STOCK,
 } from "../../queries/supplier/supplierProduct";
-import { GET_SUPPLIER_PRICE_LISTS, GET_SUPPLIER_PRODUCT_DEFAULT_PRICE_LISTS } from "../../queries/supplier/supplierPriceList";
+import {
+  GET_SUPPLIER_PRICE_LISTS,
+  GET_SUPPLIER_PRODUCT_DEFAULT_PRICE_LISTS,
+} from "../../queries/supplier/supplierPriceList";
 // errors
 import { AlimaAPITokenError } from "../../errors";
 import {
@@ -59,7 +62,7 @@ const initialState = {
   supplierProdsCatalog: [] as SupplierProductType[],
   supplierPricesLists: [] as Array<SupplierPriceListType>,
   supplierUnitDefaultPricesLists: [] as Array<string>,
-  AllPricesListsByProduct: [] as Array<ProductSupplierPriceListType>,
+  allPricesListsByProduct: [] as Array<ProductSupplierPriceListType>,
   supplierPriceListState: {
     listName: "",
     xlsxPriceListData: undefined,
@@ -96,6 +99,7 @@ const initialState = {
     loaded: false,
     file: undefined as File | undefined,
   },
+  pircesIsLoading: false
 };
 
 const slice = createSlice({
@@ -187,11 +191,11 @@ const slice = createSlice({
     },
     setSupplierUnitDefaultPriceLists(state, action) {
       state.isLoading = false;
-      state.AllPricesListsByProduct = action.payload;
+      state.allPricesListsByProduct = action.payload;
     },
     resetSupplierUnitDefaultPriceLists(state) {
       state.isLoading = false;
-      state.AllPricesListsByProduct = []; 
+      state.allPricesListsByProduct = [];
     },
     addExportProductsSuccess(state, action) {
       state.isLoading = false;
@@ -237,6 +241,14 @@ const slice = createSlice({
         file: undefined,
       };
     },
+    setPricesIsLoading(state) {
+      state.isLoading = false;
+      state.pircesIsLoading = true;
+    },
+    setPricesIsLoadingComplete(state) {
+      state.isLoading = false;
+      state.pircesIsLoading = false;
+    }
   },
 });
 
@@ -254,7 +266,7 @@ export const {
   clearExportPriceListSuccess,
   clearExportProductStockSuccess,
   resetSupplierUnitDefaultPriceLists,
-  setSupplierUnitDefaultPriceLists
+  setSupplierUnitDefaultPriceLists,
 } = slice.actions;
 
 // ----------------------------------------------------------------------
@@ -498,10 +510,9 @@ export function addSupplierProduct(
         }));
       }
       if (iepsAmount !== undefined) {
-        iepsAmount = parseFloat(iepsAmount.toString()) / 100
-      }
-      else {
-        iepsAmount = undefined
+        iepsAmount = parseFloat(iepsAmount.toString()) / 100;
+      } else {
+        iepsAmount = undefined;
       }
       const { data, error } = await graphQLFetch({
         query: NEW_SUPPLIER_PRODUCT,
@@ -542,7 +553,10 @@ export function addSupplierProduct(
         !data?.newSupplierProduct ||
         data?.newSupplierProduct?.code > 0
       ) {
-        if (data?.newSupplierProduct?.msg === "Error adding new supplier products: Product already exists") {
+        if (
+          data?.newSupplierProduct?.msg ===
+          "Error adding new supplier products: Product already exists"
+        ) {
           throw new Error("Product already exists");
         }
         if (data?.newSupplierProduct?.msg) {
@@ -628,7 +642,7 @@ export function editSupplierProduct(
         }));
       }
       if (iepsAmount !== undefined) {
-        iepsAmount = parseFloat(iepsAmount.toString()) / 100
+        iepsAmount = parseFloat(iepsAmount.toString()) / 100;
       }
       const { data, error } = await graphQLFetch({
         query: UPDATE_SUPPLIER_PRODUCT,
@@ -658,7 +672,7 @@ export function editSupplierProduct(
           upc: upc || null,
           sTags: _stags,
           longDes: longDescription,
-          iepsAmount: iepsAmount
+          iepsAmount: iepsAmount,
         },
       });
       if (error) {
@@ -1045,7 +1059,10 @@ export function setBatchSupplierProductStockFile(
         },
         files: {
           files: {
-            productStockFile: [mybatchfiles.xlsxProductStockListData, "productStock.xlsx"],
+            productStockFile: [
+              mybatchfiles.xlsxProductStockListData,
+              "productStock.xlsx",
+            ],
           },
           map: {
             productStockFile: ["variables.productStockFile"],
@@ -1082,7 +1099,6 @@ export function setBatchSupplierProductStockFile(
     }
   };
 }
-
 
 // ----------------------------------------------------------------------
 
@@ -1297,7 +1313,10 @@ export function getPriceLists(supplierUnitId: string, token: string) {
  * @param string token
  * @returns
  */
-export function getUnitDefaultPriceLists(supplierProductId: string, token: string) {
+export function getUnitDefaultPriceLists(
+  supplierProductId: string,
+  token: string
+) {
   return async (dispatch: any) => {
     try {
       if (!supplierProductId) {
@@ -1326,10 +1345,17 @@ export function getUnitDefaultPriceLists(supplierProductId: string, token: strin
         dispatch(slice.actions.setSupplierUnitDefaultPriceLists([]));
         return;
       }
-      const spPrLists = (data.getSupplierProductDefaultPriceLists).map(
+      const spPrLists = data.getSupplierProductDefaultPriceLists.map(
         (pl: any) => {
-          return {"unitName": pl.unit.unitName, "priceListName": pl.priceList.name, "price":pl.price.price,
-            "priceListId": pl.priceList.id, "priceId": pl.price.id, "newPrice": pl.price.price, "isLoading": false} as ProductSupplierPriceListType;
+          return {
+            unitName: pl.unit.unitName,
+            priceListName: pl.priceList.name,
+            price: pl.price.price,
+            priceListId: pl.priceList.id,
+            priceId: pl.price.id,
+            newPrice: pl.price.price,
+            isLoading: false,
+          } as ProductSupplierPriceListType;
         }
       );
       dispatch(slice.actions.setSupplierUnitDefaultPriceLists(spPrLists));
@@ -1480,7 +1506,6 @@ export function createSupplierStockList(
   spsListState: SupplierStockListType,
   supplierUnitIds: string[],
   token: string
-
 ) {
   return async (dispatch: any) => {
     try {
@@ -1647,7 +1672,7 @@ export function addSupplierProductImage(
       ) {
         console.warn(
           data?.newSupplierProductImage?.msg ||
-          "Error adding Supplier Prod image"
+            "Error adding Supplier Prod image"
         );
         throw new Error("Data is undefined");
       }
@@ -1719,7 +1744,7 @@ export function updateSupplierProductImage(
       ) {
         console.warn(
           data?.editSupplierProductImage?.msg ||
-          "Error updating Supplier Prod image"
+            "Error updating Supplier Prod image"
         );
         throw new Error("Data is undefined");
       }
@@ -1780,7 +1805,7 @@ export function deleteSupplierProductImage(
       ) {
         console.warn(
           data?.deleteSupplierProductImage?.msg ||
-          "Error updating Supplier Prod image"
+            "Error updating Supplier Prod image"
         );
         throw new Error("Data is undefined");
       }
@@ -1846,7 +1871,7 @@ export function reorderSupplierProductImages(
       ) {
         console.warn(
           data?.reorganizeSupplierProductImage?.[0]?.msg ||
-          "Error reorganizing Supplier Prod image"
+            "Error reorganizing Supplier Prod image"
         );
         throw new Error("Data is undefined");
       }
@@ -1868,7 +1893,6 @@ export function reorderSupplierProductImages(
     }
   };
 }
-
 
 // ----------------------------------------------------------------------
 /**
@@ -1904,10 +1928,7 @@ export function exportProductsFile(
       if (!data && !data?.exportProductsFile) {
         throw new Error("Data is undefined");
       }
-      if (
-        data?.exportProductsFile.code &&
-        data?.exportProductsFile.code > 0
-      ) {
+      if (data?.exportProductsFile.code && data?.exportProductsFile.code > 0) {
         throw new Error("Hubo un error, no se pudo exportar los productos.");
       }
       const exportProd = data.exportProductsFile;
@@ -1920,7 +1941,7 @@ export function exportProductsFile(
           file: xfile,
         })
       );
-      console.log("fer")
+      console.log("fer");
     } catch (error: any) {
       console.warn("Issues exporting prices");
       dispatch(
@@ -1980,11 +2001,10 @@ export function exportProductsStockFile(
       if (!data && !data?.exportProductsFile) {
         throw new Error("Data is undefined");
       }
-      if (
-        data?.exportProductsFile.code &&
-        data?.exportProductsFile.code > 0
-      ) {
-        throw new Error("Hubo un error, no se pudo exportar lo el inventario de productos.");
+      if (data?.exportProductsFile.code && data?.exportProductsFile.code > 0) {
+        throw new Error(
+          "Hubo un error, no se pudo exportar lo el inventario de productos."
+        );
       }
       const exportStockProd = data.exportProductsFile;
       const jData = JSON.parse(exportStockProd.file);
@@ -2026,7 +2046,7 @@ export function exportProductsStockFile(
 export function exportAllPriceListFile(
   exportFormat: string,
   unit_id: string,
-  token: string,
+  token: string
 ) {
   return async (dispatch: any) => {
     try {
@@ -2053,11 +2073,10 @@ export function exportAllPriceListFile(
       if (!data && !data?.exportProductsFile) {
         throw new Error("Data is undefined");
       }
-      if (
-        data?.exportProductsFile.code &&
-        data?.exportProductsFile.code > 0
-      ) {
-        throw new Error("Hubo un error, no se pudo exportar las listas de precios");
+      if (data?.exportProductsFile.code && data?.exportProductsFile.code > 0) {
+        throw new Error(
+          "Hubo un error, no se pudo exportar las listas de precios"
+        );
       }
       const exportProd = data.exportProductsFile;
       const jData = JSON.parse(exportProd.file);
@@ -2101,7 +2120,7 @@ export function exportPriceListFile(
   exportFormat: string,
   unit_id: string,
   price_list_id: string,
-  token: string,
+  token: string
 ) {
   return async (dispatch: any) => {
     try {
@@ -2133,11 +2152,10 @@ export function exportPriceListFile(
       if (!data && !data?.exportProductsFile) {
         throw new Error("Data is undefined");
       }
-      if (
-        data?.exportProductsFile.code &&
-        data?.exportProductsFile.code > 0
-      ) {
-        throw new Error("Hubo un error, no se pudo exportar la lista de precios.");
+      if (data?.exportProductsFile.code && data?.exportProductsFile.code > 0) {
+        throw new Error(
+          "Hubo un error, no se pudo exportar la lista de precios."
+        );
       }
       const exportProd = data.exportProductsFile;
       const jData = JSON.parse(exportProd.file);
@@ -2171,7 +2189,7 @@ export function exportPriceListFile(
 export function deletePriceList(
   priceListId: string,
   unitId: string,
-  token: string,
+  token: string
 ) {
   return async (dispatch: any) => {
     try {
@@ -2185,7 +2203,7 @@ export function deletePriceList(
         query: DELETE_SUPPLIER_PRICE_LIST,
         variables: {
           priceListId: priceListId,
-          unitId: unitId
+          unitId: unitId,
         },
         headers: {
           Authorization: `supplybasic ${token}`,
@@ -2201,13 +2219,13 @@ export function deletePriceList(
         data?.deleteSupplierPriceList.code &&
         data?.deleteSupplierPriceList.code > 0
       ) {
-        throw new Error("Hubo un error, no se pudo eliminar la lista de precios.");
+        throw new Error(
+          "Hubo un error, no se pudo eliminar la lista de precios."
+        );
       }
 
       // set file to be downloaded
-      dispatch(
-        slice.actions.finishProcess()
-      );
+      dispatch(slice.actions.finishProcess());
     } catch (error: any) {
       console.warn("Issues exporting price list");
       dispatch(
@@ -2238,18 +2256,27 @@ export function updateOneProductPriceList(
         console.warn("priceId is undefined");
         return;
       }
-      const UpdatedAllPricesListsByProductLoading = priceLists.map((priceList) =>
-        priceList.priceListId === priceListId ?
-          { ...priceList, isLoading: true } : {...priceList, isLoading: true}
+      const updatedAllPricesListsByProductLoading = priceLists.map(
+        (priceList) =>
+          priceList.priceListId === priceListId
+            ? { ...priceList, isLoading: true }
+            : { ...priceList, isLoading: false }
+      );
+      dispatch(
+        slice.actions.setSupplierUnitDefaultPriceLists(
+          updatedAllPricesListsByProductLoading
+        )
+      );
+      dispatch(
+        slice.actions.setPricesIsLoading()
       )
-      dispatch(slice.actions.setSupplierUnitDefaultPriceLists(UpdatedAllPricesListsByProductLoading));
       // fetch historic ordenes
       const { data, error } = await graphQLFetch({
         query: UPDATE_ONE_SUPPLIER_PRICE_LIST,
         variables: {
-          priceListId: priceListId,
-          priceId: priceId,
-          price: price
+          priceListId,
+          priceId,
+          price,
         },
         headers: {
           Authorization: `supplybasic ${token}`,
@@ -2258,30 +2285,36 @@ export function updateOneProductPriceList(
       if (error) {
         throw error;
       }
-      if (!data && !data?.editProductSupplierPriceList) {
-        const UpdatedAllPricesListsByProduct = UpdatedAllPricesListsByProductLoading.map((priceList) =>
-        priceList.priceListId === priceListId ?
-          { ...priceList, isLoading: false } : {...priceList, isLoading: false}
+      if ((!data && !data?.editProductSupplierPriceList) || (data?.editProductSupplierPriceList.code &&
+        data?.editProductSupplierPriceList.code > 0)) {
+        const updatedAllPricesListsByProduct = updatedAllPricesListsByProductLoading.map((priceList) => ({
+          ...priceList,
+          isLoading: false,
+        }));
+        dispatch(
+          slice.actions.setSupplierUnitDefaultPriceLists(
+            updatedAllPricesListsByProduct
+          )
+        );
+        dispatch(
+          slice.actions.setPricesIsLoadingComplete()
         )
-        dispatch(slice.actions.setSupplierUnitDefaultPriceLists(UpdatedAllPricesListsByProduct));
-        throw new Error("Data is undefined");
-      }
-      if (
-        data?.editProductSupplierPriceList.code &&
-        data?.editProductSupplierPriceList.code > 0
-      ) {
-        const UpdatedAllPricesListsByProduct = UpdatedAllPricesListsByProductLoading.map((priceList) =>
-        priceList.priceListId === priceListId ?
-          { ...priceList, isLoading: false } : {...priceList, isLoading: false}
-        )
-        dispatch(slice.actions.setSupplierUnitDefaultPriceLists(UpdatedAllPricesListsByProduct));
         throw new Error("Hubo un error, no se pudo editar el precios.");
       }
-      const UpdatedAllPricesListsByProduct = UpdatedAllPricesListsByProductLoading.map((priceList) =>
-      priceList.priceListId === priceListId ?
-        { ...priceList, isLoading: false, price:price } : {...priceList, isLoading: false}
+      const updatedAllPricesListsByProduct =
+        updatedAllPricesListsByProductLoading.map((priceList) =>
+          priceList.priceListId === priceListId
+            ? { ...priceList, isLoading: false, price: price }
+            : { ...priceList, isLoading: false }
+        );
+      dispatch(
+        slice.actions.setSupplierUnitDefaultPriceLists(
+          updatedAllPricesListsByProduct
+        )
+      );
+      dispatch(
+        slice.actions.setPricesIsLoadingComplete()
       )
-      dispatch(slice.actions.setSupplierUnitDefaultPriceLists(UpdatedAllPricesListsByProduct));
       // set file to be downloaded
     } catch (error: any) {
       console.warn("Issues exporting price list");

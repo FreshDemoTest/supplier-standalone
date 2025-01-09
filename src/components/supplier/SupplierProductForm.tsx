@@ -76,12 +76,12 @@ const UOMOptions = Object.entries(UOMTypes).map(([key, value]) => ({
 
 type PriceIncrementerProps = {
   priceDetail: ProductSupplierPriceListType;
-  AllPricesListsByProduct: [ProductSupplierPriceListType]
+  allPricesListsByProduct: [ProductSupplierPriceListType];
 };
 
 const PriceIncrementer: React.FC<PriceIncrementerProps> = ({
   priceDetail,
-  AllPricesListsByProduct
+  allPricesListsByProduct,
 }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -115,27 +115,29 @@ const PriceIncrementer: React.FC<PriceIncrementerProps> = ({
     if (value < 0) {
       const textValue = setQuant(0);
       _setQuant(parseFloat(textValue.toString()));
-      const UpdatedAllPricesListsByProduct = AllPricesListsByProduct.map((priceList) =>
-        priceList.priceListId === priceDetail.priceListId ?
-          { ...priceDetail, newPrice: value } : priceList
-      )
-      dispatch(setSupplierUnitDefaultPriceLists(
-        UpdatedAllPricesListsByProduct
-      ))
-    }
-    else {
+      const updatedAllPricesListsByProduct = allPricesListsByProduct.map(
+        (priceList) =>
+          priceList.priceListId === priceDetail.priceListId
+            ? { ...priceDetail, newPrice: value }
+            : priceList
+      );
+      dispatch(
+        setSupplierUnitDefaultPriceLists(updatedAllPricesListsByProduct)
+      );
+    } else {
       const textValue = setQuant(value);
       _setQuant(parseFloat(textValue.toString()));
-      const UpdatedAllPricesListsByProduct = AllPricesListsByProduct.map((priceList) =>
-        priceList.priceListId === priceDetail.priceListId ?
-          { ...priceDetail, newPrice: value } : priceList
-      )
-      dispatch(setSupplierUnitDefaultPriceLists(
-        UpdatedAllPricesListsByProduct
-      ))
+      const updatedAllPricesListsByProduct = allPricesListsByProduct.map(
+        (priceList) =>
+          priceList.priceListId === priceDetail.priceListId
+            ? { ...priceDetail, newPrice: value }
+            : priceList
+      );
+      dispatch(
+        setSupplierUnitDefaultPriceLists(updatedAllPricesListsByProduct)
+      );
     }
   };
-
 
   return (
     <Box
@@ -234,9 +236,12 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
   const theme = useTheme();
   const { sessionToken } = useAuth();
   const dispatch = useAppDispatch();
-  const { productCategories, satCodes: globalSAT, AllPricesListsByProduct } = useAppSelector(
-    (state) => state.supplier
-  );
+  const {
+    productCategories,
+    satCodes: globalSAT,
+    allPricesListsByProduct,
+    pircesIsLoading,
+  } = useAppSelector((state) => state.supplier);
   const { business } = useAppSelector((state) => state.account);
   const [sCodeSearch, setSCodeSearch] = useState(
     supProductState.taxId?.slice(0, 5)
@@ -301,8 +306,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
     // [TODO] fix this later, it should work even in editMode
     if (editMode) {
       dispatch(searchEditProductSATCodes(sCodeSearch));
-    }
-    else {
+    } else {
       dispatch(searchProductSATCodes(sCodeSearch));
     }
     searchFetch.current = sCodeSearch || "";
@@ -416,14 +420,13 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
     );
   };
 
-
   const onClose = () => {
-    setConfirmModalOpen(false)
-  }
+    setConfirmModalOpen(false);
+  };
 
-  const UpdatePriceList = async (priceList: any) => {
+  const updatePriceList = async (priceList: any) => {
     try {
-      if (priceList.newPrice <= 0){
+      if (priceList.newPrice <= 0) {
         enqueueSnackbar("El tiene que ser mayor a 0", {
           variant: "error",
           action: (key) => (
@@ -432,8 +435,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
             </IconButton>
           ),
         });
-      }
-      else {
+      } else {
         // Add product
         await dispatch(
           updateOneProductPriceList(
@@ -441,7 +443,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
             priceList.priceId,
             priceList.newPrice,
             sessionToken || "",
-            AllPricesListsByProduct || []
+            allPricesListsByProduct || []
           )
         );
         enqueueSnackbar("Precio correctamente.", {
@@ -453,7 +455,6 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
           ),
         });
       }
-
     } catch (error) {
       console.error(error);
       let errmsg = ""; // Declare the variable errmsg
@@ -469,7 +470,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
         ),
       });
     }
-  }
+  };
 
   // yup schema based on supProductState
   const SupplierProductSchema = Yup.object().shape({
@@ -520,7 +521,9 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
           ? supProductState.taxAmount * 100
           : undefined,
       iepsAmount:
-        (supProductState.iepsAmount === null || supProductState.iepsAmount === undefined || supProductState.iepsAmount === 0)
+        supProductState.iepsAmount === null ||
+          supProductState.iepsAmount === undefined ||
+          supProductState.iepsAmount === 0
           ? undefined
           : supProductState.iepsAmount * 100,
       upc: supProductState.upc || undefined,
@@ -544,7 +547,14 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
     validateOnChange: true,
     onSubmit: async (values, { setErrors, setSubmitting }) => {
       try {
-        if (values.taxAmount === 8 || values.taxAmount === 16) {
+        if (
+          values.taxAmount !== 8 &&
+          values.taxAmount !== 16 &&
+          values.taxAmount!.toString() !== "0" &&
+          values.taxAmount!.toString() !== "8" &&
+          values.taxAmount!.toString() !== "16" &&
+          values.taxAmount!.toString() !== ""
+        ) {
           enqueueSnackbar("El iva solo puede ser del 8% o 16%", {
             variant: "error",
             action: (key) => (
@@ -554,8 +564,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
             ),
           });
           setSubmitting(false);
-        }
-        else {
+        } else {
           if (!editMode) {
             // Add product
             await dispatch(
@@ -631,8 +640,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
         let errmsg = ""; // Declare the variable errmsg
         if ((error as Error).message === "Error: Product already exists") {
           errmsg = "Ya existe un producto con ese SKU."; // Assign value to errmsg
-        }
-        else {
+        } else {
           errmsg = (error as Error).message; // Assign value to errmsg
         }
         enqueueSnackbar(errmsg, {
@@ -668,22 +676,21 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
   return (
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-
         <Grid container spacing={2}>
-        <Dialog
+          <Dialog
             open={confirmModalOpen}
             onClose={onClose}
             aria-labelledby="addproduct-to-pricelist-dialog"
             aria-describedby="addproduct-to-pricelist-dialog-description"
           >
             <DialogTitle id="addproduct-to-pricelist-dialog">
-              Listas de precios por default del producto
+              Listas de precios del producto
             </DialogTitle>
             <DialogContent>
               <Box>
                 <DynamicTableLoader
                   ContainerType={StyledTableContainer}
-                  elements={AllPricesListsByProduct}
+                  elements={allPricesListsByProduct}
                   headers={
                     <TableHead>
                       <TableRow>
@@ -701,58 +708,63 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
                     </TableHead>
                   }
                   renderMap={(fPriceList) => {
-                    return fPriceList.map((price) => {
-                      return (
-                        <TableRow key={price.priceListId}>
-                          <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box>
-                                <Typography variant="subtitle2">
-                                  {price.priceListName}
-                                </Typography>
-                                <Typography
-                                  component="span"
-                                  variant="body1"
-                                  color="textSecondary"
-                                  sx={{ fontSize: 12 }}
-                                >
-                                  {price.unitName}
-                                </Typography>
+                    return fPriceList.map(
+                      (price: ProductSupplierPriceListType) => {
+                        return (
+                          <TableRow key={price.priceListId}>
+                            <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
+                              <Box
+                                sx={{ display: "flex", alignItems: "center" }}
+                              >
+                                <Box>
+                                  <Typography variant="subtitle2">
+                                    {price.priceListName}
+                                  </Typography>
+                                  <Typography
+                                    component="span"
+                                    variant="body1"
+                                    color="textSecondary"
+                                    sx={{ fontSize: 12 }}
+                                  >
+                                    {price.unitName}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell sx={{ minWidth: 120, maxWidth: 180 }}>
-                            <PriceIncrementer
-                              priceDetail={price}
-                              AllPricesListsByProduct={AllPricesListsByProduct}
-                            />
-                          </TableCell>
-                          <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
-                            {price.isLoading ?
-                              (
-                                <LoadingProgress></LoadingProgress>
-                              ) : (
+                            </TableCell>
+                            <TableCell sx={{ minWidth: 120, maxWidth: 180 }}>
+                              <PriceIncrementer
+                                priceDetail={price}
+                                allPricesListsByProduct={
+                                  allPricesListsByProduct
+                                }
+                              />
+                            </TableCell>
+                            <TableCell sx={{ minWidth: 180, maxWidth: 210 }}>
+                              {price.isLoading ? (
+                                <LoadingProgress />
+                              ) : !(price.price === price.newPrice || price.newPrice < 0 || Number.isNaN(price.newPrice)) ? (
                                 <Button
                                   variant="contained"
                                   color="info"
-                                  disabled={price.price === price.newPrice || price.newPrice < 0 || Number.isNaN(price.newPrice)}
+                                  disabled={
+                                    pircesIsLoading
+                                  }
                                   onClick={() => {
-                                    UpdatePriceList(
-                                      price);
+                                    updatePriceList(price);
                                   }}
                                 >
                                   Actualizar
                                 </Button>
-                              )
-                            }
+                              ) : null
+                              }
 
-                          </TableCell>
-                        </TableRow>
-                      );
-                    });
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    );
                   }}
-                >
-                </DynamicTableLoader>
+                ></DynamicTableLoader>
               </Box>
             </DialogContent>
             <DialogActions>
@@ -1147,11 +1159,11 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
               <TextField
                 fullWidth
                 label="I.E.P.S."
-                {...getFieldProps("iepsAmount") || undefined}
+                {...(getFieldProps("iepsAmount") || undefined)}
                 error={Boolean(touched.iepsAmount && errors.iepsAmount)}
                 helperText={touched.iepsAmount && errors.iepsAmount}
                 InputProps={{
-                  endAdornment:
+                  endAdornment: (
                     <Typography
                       color={"text.secondary"}
                       sx={{
@@ -1160,7 +1172,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
                     >
                       %
                     </Typography>
-                  ,
+                  ),
                 }}
               />
 
@@ -1195,7 +1207,7 @@ const SupplierProductForm: React.FC<SupplierProductFormProps> = ({
                       fullWidth
                       variant="contained"
                       color="info"
-                      disabled={AllPricesListsByProduct.length === 0}
+                      disabled={allPricesListsByProduct.length === 0}
                       sx={{ mt: 1 }}
                       onClick={() => {
                         setConfirmModalOpen(true);
