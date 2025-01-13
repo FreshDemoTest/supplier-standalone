@@ -78,7 +78,7 @@ const ListClients: React.FC<ListClientsViewProps> = ({ viewMode }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
   return <ListClientsPage title="Clientes | Alima" viewMode={viewMode} />;
 };
 

@@ -46,7 +46,7 @@ const AddInvoice: React.FC<{}> = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   return (
     <RootStyle title={"Crear Factura Consolidada | Alima"}>

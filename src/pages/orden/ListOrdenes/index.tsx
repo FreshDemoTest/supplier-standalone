@@ -132,7 +132,7 @@ const ListOrdenes: React.FC<ListOrdenesViewProps> = ({ viewMode }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   return (
     <ListOrdenesPage

@@ -196,7 +196,7 @@ const ListSupplierProducts: React.FC<ListSuppliersViewProps> = ({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   // handling hash at URL to set viewMode
   useEffect(() => {

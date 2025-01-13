@@ -119,7 +119,7 @@ export default function AlimaAccount() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   const handleChange = (event: any, newValue: AlimaPlanTabType) => {
     changeTab(newValue);

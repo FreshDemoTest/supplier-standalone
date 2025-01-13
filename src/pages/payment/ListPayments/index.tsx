@@ -113,7 +113,7 @@ const ListInvoices: React.FC<ListInvoicesViewProps> = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   return (
     <ListPaymentsPage

@@ -5,7 +5,7 @@ import { Box, Container, Typography } from "@mui/material";
 // hooks
 import useAuth from "../../../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { Navigate, useParams } from "react-router";
+import { useParams } from "react-router";
 // redux
 import {
   getProductCatalog,
@@ -83,7 +83,7 @@ export default function EditEcommerce() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowReports]);
+  }, [permissionsLoaded, allowReports]); // [TOREV] @jorgeviz
 
   // on dismount reset satCodes
   useEffect(() => {
