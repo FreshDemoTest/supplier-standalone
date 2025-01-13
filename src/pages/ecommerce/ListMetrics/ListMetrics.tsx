@@ -65,7 +65,7 @@ const ListMetricsPage: React.FC = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowReports]);
+  }, [permissionsLoaded, allowReports]); // [TOREV] @jorgeviz
 
   // verify if it has custom reports
   const reportSectionDetails = retrieveUISectionDetails("Reportes", saasConfig);

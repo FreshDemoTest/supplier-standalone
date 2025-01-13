@@ -17,6 +17,7 @@ import { getSupplierAlimaAccountSaasConfig } from "../../../redux/slices/account
 import useAuth from "../../../hooks/useAuth";
 import ListMetricsPage from "./ListMetrics";
 import EditEcommerce from "./EditEcommerce";
+import LoadingProgress from "../../../components/LoadingProgress";
 // import { SaasPluginType } from "../../../domain/account/Business";
 // import LoadingProgress from "../../../components/LoadingProgress";
 
@@ -150,7 +151,7 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({ viewMode }) => {
   // permissions [TODO] change perms
   const allowSupProdsList = isBusinessOnboarded
     ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
-      isAllowedTo(allowed?.unitPermissions, "ecommerce-view-list")
+    isAllowedTo(allowed?.unitPermissions, "ecommerce-view-list")
     : true;
 
   // redirect to not allowed if doesn't have access
@@ -164,7 +165,7 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({ viewMode }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   // handling hash at URL to set viewMode
   useEffect(() => {
@@ -179,7 +180,12 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({ viewMode }) => {
     }
   }, [hash]);
 
-  return <ListEcommercePage title="Ecommerce | Alima" viewMode={activeTab} />;
+  return <>
+    {!permissionsLoaded && <LoadingProgress />}
+    {permissionsLoaded && (
+      <ListEcommercePage title="Ecommerce | Alima" viewMode={activeTab} />)
+    };
+  </>
 };
 
 export default ListEcommerce;

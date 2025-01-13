@@ -78,7 +78,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ title, pluginName }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowReports]);
+  }, [permissionsLoaded, allowReports]); // [TOREV] @jorgeviz
 
   // verify if it has custom reports
 

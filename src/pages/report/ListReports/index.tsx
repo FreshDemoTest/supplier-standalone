@@ -83,7 +83,7 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowReports]);
+  }, [permissionsLoaded, allowReports]); // [TOREV] @jorgeviz
 
   // verify if it has custom reports
   const reportSectionDetails = retrieveUISectionDetails("Reportes", saasConfig);
@@ -157,7 +157,7 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowReports]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   // verify if it has custom reports
 

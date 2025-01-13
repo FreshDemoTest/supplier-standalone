@@ -113,7 +113,7 @@ export default function BusinessAccount() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissionsLoaded, allowed]);
+  }, [permissionsLoaded, allowed]); // [TOREV] @jorgeviz
 
   const handleChange = (event: any, newValue: BusinessTabType) => {
     changeTab(newValue);
