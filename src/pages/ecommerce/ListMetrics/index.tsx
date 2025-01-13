@@ -149,7 +149,8 @@ const ListEcommerce: React.FC<ListEcommerceViewProps> = ({ viewMode }) => {
 
   // permissions [TODO] change perms
   const allowSupProdsList = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view")
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "ecommerce-view-list")
     : true;
 
   // redirect to not allowed if doesn't have access

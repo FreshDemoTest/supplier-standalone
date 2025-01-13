@@ -16,7 +16,6 @@ import {
   isAllowedTo,
   retrieveUISectionDetails,
 } from "../../../utils/permissions";
-import { useSnackbar } from "notistack";
 import { useNavigate, useParams } from "react-router";
 import { SaasPluginType } from "../../../domain/account/Business";
 import { Plugin } from "../../../components/report/Plugin";
@@ -42,7 +41,6 @@ const ReportPage: React.FC<ReportPageProps> = ({ title, pluginName }) => {
   const fetched = useRef<boolean>(false);
   const { sessionToken } = useAuth();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { business, saasConfig } = useAppSelector((state) => state.account);
   const dispatch = useAppDispatch();
   const { loaded: permissionsLoaded, allowed } = useAppSelector(
@@ -56,7 +54,8 @@ const ReportPage: React.FC<ReportPageProps> = ({ title, pluginName }) => {
 
   // permission vars
   const allowReports = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view")
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "reports-view-list")
     : true;
 
   useEffect(() => {
@@ -71,10 +70,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ title, pluginName }) => {
   // Internal Reports Routing - redirect to orders if doesn't have access
   useEffect(() => {
     if (permissionsLoaded && !allowReports) {
-      navigate(PATH_APP.orden.list);
-      enqueueSnackbar("No tienes acceso a los Reportes", {
-        variant: "warning",
-      });
+      navigate(PATH_APP.notAllowed);
       track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",

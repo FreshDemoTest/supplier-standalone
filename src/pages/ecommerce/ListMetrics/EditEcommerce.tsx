@@ -5,7 +5,7 @@ import { Box, Container, Typography } from "@mui/material";
 // hooks
 import useAuth from "../../../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 // redux
 import {
   getProductCatalog,
@@ -19,6 +19,11 @@ import LoadingProgress from "../../../components/LoadingProgress";
 import { getEcommerceInfo } from "../../../redux/slices/account";
 import EcommerceParamsForm from "../../../components/supplier/EcommerceForm";
 import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router";
+import { isAllowedTo } from "../../../utils/permissions";
+// utils & routes
+import { PATH_APP } from "../../../routes/paths";
+import track from "../../../utils/analytics";
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +48,7 @@ const ContentStyle = styled("div")(({ theme }) => ({
 export default function EditEcommerce() {
   const { productId } = useParams<{ productId: string }>();
   const { sessionToken, getSessionToken } = useAuth();
+  const navigate = useNavigate();
   const [ecommerceFetch, setEcommerceFetch] = useState(false);
   // const { isLoading } = useAppSelector(
   //   (state) => state.supplier
@@ -54,6 +60,30 @@ export default function EditEcommerce() {
     (state) => state.supplier
   );
   const dispatch = useAppDispatch();
+
+  const { loaded: permissionsLoaded, allowed } = useAppSelector(
+    (state) => state.permission
+  );
+  const { isBusinessOnboarded } = useAppSelector((state) => state.account);
+
+  // permission vars
+  const allowReports = isBusinessOnboarded
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "ecommerce-view-list")
+    : true;
+
+  // Internal Reports Routing - redirect to orders if doesn't have access
+  useEffect(() => {
+    if (permissionsLoaded && !allowReports) {
+      navigate(PATH_APP.notAllowed);
+      track("view_item_list", {
+        visit: window.location.toString(),
+        page: "Ecommerce Reports",
+        section: "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissionsLoaded, allowReports]);
 
   // on dismount reset satCodes
   useEffect(() => {

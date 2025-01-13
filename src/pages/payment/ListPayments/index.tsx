@@ -96,7 +96,7 @@ const ListInvoices: React.FC<ListInvoicesViewProps> = () => {
 
   // permissions
   const allowPagosList = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "invoices-view-list")
+    ? isAllowedTo(allowed?.unitPermissions, "payments-view-list")
     : true;
 
   // Retrieve the search value from the URL

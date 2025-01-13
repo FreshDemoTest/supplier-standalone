@@ -14,7 +14,6 @@ import {
   isAllowedTo,
   retrieveUISectionDetails,
 } from "../../../utils/permissions";
-import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router";
 import DataReportsEcommerceSection from "../../../components/report/DataReportsEcommerce";
 import track from "../../../utils/analytics";
@@ -33,7 +32,6 @@ const ListMetricsPage: React.FC = () => {
   const fetched = useRef<boolean>(false);
   const { sessionToken } = useAuth();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { business, saasConfig } = useAppSelector((state) => state.account);
   const dispatch = useAppDispatch();
   const { loaded: permissionsLoaded, allowed } = useAppSelector(
@@ -43,7 +41,8 @@ const ListMetricsPage: React.FC = () => {
 
   // permission vars
   const allowReports = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view")
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "ecommerce-view-list")
     : true;
 
   useEffect(() => {
@@ -58,10 +57,7 @@ const ListMetricsPage: React.FC = () => {
   // Internal Reports Routing - redirect to orders if doesn't have access
   useEffect(() => {
     if (permissionsLoaded && !allowReports) {
-      navigate(PATH_APP.orden.list);
-      enqueueSnackbar("No tienes acceso a los Reportes", {
-        variant: "warning",
-      });
+      navigate(PATH_APP.notAllowed);
       track("view_item_list", {
         visit: window.location.toString(),
         page: "Ecommerce Reports",

@@ -47,6 +47,10 @@ export const APP_PERMISSION_GROUPS = [
       {
         label: 'Ver y Generar Facturas',
         key: 'invoices-all'
+      },
+      {
+        label: `Ver, Descargar, Agregar pagos`,
+        key: 'payments-all'
       }
     ]
   },
@@ -69,7 +73,45 @@ export const APP_PERMISSION_GROUPS = [
         key: 'catalog-all'
       }
     ]
-  }
+  },
+  // {
+  //   groupKey: 'invoices',
+  //   groupLabel: 'Facturas',
+  //   permissions: [
+  //     {
+  //       label: `Ver, Descargar, Agregar facturas`,
+  //       key: 'invoices-all'
+  //     }
+  //   ]
+  // },
+  {
+    groupKey: 'reports',
+    groupLabel: 'Reportes',
+    permissions: [
+      {
+        label: `Ver, Descargar reportes`,
+        key: 'reports-all'
+      },
+      {
+        label: `Ver, Descargar reportes personalizados`,
+        key: 'personalized-reports-all'
+      },
+      {
+        label: `Ver, Descargar reportes de home`,
+        key: 'home-reports-all'
+      },
+    ]
+  },
+  {
+    groupKey: 'e-commerce b2b',
+    groupLabel: 'Ecommerce B2B',
+    permissions: [
+      {
+        label: `Ver y editar parametros de e-commerce`,
+        key: 'ecommerce-all'
+      }
+    ]
+  },
 ];
 
 const ADMIN_PERMISSIONS = {
@@ -109,6 +151,21 @@ export const permissionsExpantionMap = {
     'catalog-upload', // [TODO]
     'catalog-edit-upload', // [TODO]
   ],
+  'payments-all': [
+    'payments-view-list',
+  ],
+  'reports-all': [
+    'reports-view-list',
+  ],
+  'personalized-reports-all': [
+    'personalized-reports-view-list',
+  ],
+  'home-reports-all': [
+    'home-reports-view-list',
+  ],
+  'ecommerce-all': [
+    'ecommerce-view-list',
+  ],
   'usersadmin-all': [
     // alima account
     'usersadmin-alima-plan-view',
@@ -132,6 +189,8 @@ export const permissionsExpantionMap = {
     'usersadmin-delete', // [TODO]
     // reports
     'usersadmin-reports-view',
+    // payments
+    'usersadmin-payments-view'
   ]
 };
 

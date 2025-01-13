@@ -26,7 +26,6 @@ import {
   isAllowedTo,
   retrieveUISectionDetails,
 } from "../../../utils/permissions";
-import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router";
 import { SaasSubsectionType } from "../../../domain/account/Business";
 import { Link } from "react-router-dom";
@@ -51,7 +50,6 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
   const fetched = useRef<boolean>(false);
   const { sessionToken } = useAuth();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { business, saasConfig } = useAppSelector((state) => state.account);
   const dispatch = useAppDispatch();
   const { loaded: permissionsLoaded, allowed } = useAppSelector(
@@ -61,7 +59,8 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
 
   // permission vars
   const allowReports = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view")
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "reports-view-list")
     : true;
 
   useEffect(() => {
@@ -76,10 +75,7 @@ const ListReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
   // Internal Reports Routing - redirect to orders if doesn't have access
   useEffect(() => {
     if (permissionsLoaded && !allowReports) {
-      navigate(PATH_APP.orden.list);
-      enqueueSnackbar("No tienes acceso a los Reportes", {
-        variant: "warning",
-      });
+      navigate(PATH_APP.notAllowed);
       track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",
@@ -125,7 +121,6 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
   const fetched = useRef<boolean>(false);
   const { sessionToken } = useAuth();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { business, saasConfig } = useAppSelector((state) => state.account);
   const dispatch = useAppDispatch();
   const { loaded: permissionsLoaded, allowed } = useAppSelector(
@@ -138,7 +133,8 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
 
   // permission vars
   const allowReports = isBusinessOnboarded
-    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view")
+    ? isAllowedTo(allowed?.unitPermissions, "usersadmin-reports-view") ||
+      isAllowedTo(allowed?.unitPermissions, "personalized-reports-view-list")
     : true;
 
   useEffect(() => {
@@ -153,10 +149,7 @@ const ListCustomReportsPage: React.FC<ListReportsPageProps> = ({ title }) => {
   // Internal Reports Routing - redirect to orders if doesn't have access
   useEffect(() => {
     if (permissionsLoaded && !allowReports) {
-      navigate(PATH_APP.orden.list);
-      enqueueSnackbar("No tienes acceso a los Reportes", {
-        variant: "warning",
-      });
+      navigate(PATH_APP.notAllowed);
       track("view_item_list", {
         visit: window.location.toString(),
         page: "Reports",

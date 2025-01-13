@@ -43,6 +43,7 @@ import { getActiveClients } from "../../../redux/slices/client";
 import { createBlobURI, fISODate } from "../../../utils/helpers";
 import track from "../../../utils/analytics";
 import { PATH_APP } from "../../../routes/paths";
+import { isAllowedTo } from "../../../utils/permissions";
 
 // ----------------------------------------------------------------------
 
@@ -126,6 +127,10 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
   const dispatch = useAppDispatch();
   const activeUnits = units.filter((u: any) => !u.deleted);
   const [searchString, setSearchString] = useState(search);
+  const { isBusinessOnboarded } = useAppSelector((state) => state.account);
+    const { loaded: permissionsLoaded, allowed } = useAppSelector(
+      (state) => state.permission
+    );
 
   // fetch historic
   useEffect(() => {
@@ -350,6 +355,24 @@ const ListPaymentsView: React.FC<ListPaymentsViewProps> = ({
           ]
         : []
     ) || [];
+
+  // permissions
+  const allowPagosList = isBusinessOnboarded
+    ? isAllowedTo(allowed?.unitPermissions, "invoices-view-list")
+    : true;
+
+  // redirect to not allowed if doesn't have access
+  useEffect(() => {
+    if (permissionsLoaded && !allowPagosList) {
+      navigate(PATH_APP.notAllowed);
+      track("exception", {
+        visit: window.location.toString(),
+        page: "ListPayments",
+        section: "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissionsLoaded, allowed]);
 
   return (
     <Box>
