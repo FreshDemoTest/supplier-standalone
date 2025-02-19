@@ -18,7 +18,7 @@ import { PersistGate } from "redux-persist/lib/integration/react";
 
 // Service providers
 import { AuthProvider } from "./contexts/FirebaseContext";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 
 // PWA service worker
@@ -44,13 +44,13 @@ root.render(
       <ReduxProvider store={store}>
         <PersistGate loading={<LoadingScreen />} persistor={persistor}>
           {/* Router */}
-          <BrowserRouter>
+          <HashRouter>
             {/* Firebase Auth Provider */}
             <AuthProvider>
               {/* Main app */}
               <App />
             </AuthProvider>
-          </BrowserRouter>
+          </HashRouter>
         </PersistGate>
       </ReduxProvider>
     </HelmetProvider>
