@@ -43,9 +43,9 @@ import { delay, fISODate } from "../../../utils/helpers";
 
 const buildOrdenDetailsURL = (ordenId: string) => {
   const _url = new URL(
-    PATHS_EXTERNAL.restaurantApp + "/ext"+ordenId
+    PATHS_EXTERNAL.restaurantApp ?? "http://localhost:8000"
   );
-  // _url.searchParams.append("ordenId", ordenId);
+  _url.searchParams.append("ordenId", ordenId);
   return _url;
 };
 
