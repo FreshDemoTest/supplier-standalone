@@ -480,7 +480,7 @@ const appRoutes = [
   {
     route: {
       path: 'ext',
-      element: <Navigate to={PATH_AUTH.login} replace />
+      element: <SupplierPurchaseOrden />
     },
     subpaths: [
       // Link para ver Orden de Compra
