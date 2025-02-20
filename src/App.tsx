@@ -11,9 +11,14 @@ import useAuth from './hooks/useAuth';
 import LoadingScreen from './components/LoadingScreen';
 import ScrollToTop from './components/ScrollToTop';
 import GoogleAnalytics from './components/GoogleAnalytics';
+import { useLocation } from 'react-router';
+import SupplierPurchaseOrden from './pages/external/SupplierPurchaseOrden';
 
 const App: React.FC = () => {
   const { isInitialized } = useAuth();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const ordenId = searchParams.get('ordenId');
 
   return (
     // Theme Config Layer
@@ -25,8 +30,12 @@ const App: React.FC = () => {
         <GlobalStyles />
         <ScrollToTop /> {/* Scroll to top of page at load time */}
         <GoogleAnalytics />
-        {/* Routed Application  */}
-        {isInitialized ? <Router routes={appRoutes} /> : <LoadingScreen />}
+        {/* Routed Application */}
+          {ordenId ? (
+            <SupplierPurchaseOrden />  // If ordenId exists, render SupplierPurchaseOrden
+          ) : (
+            isInitialized ? <Router routes={appRoutes} /> : <LoadingScreen />
+          )}
       </NotistackProvider>
     </ThemeConfig>
   );
